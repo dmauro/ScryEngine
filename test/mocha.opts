@@ -1,0 +1,5 @@
+--compilers coffee:coffee-script/register
+--timeout 10s
+--reporter spec
+--require assert
+--recursive

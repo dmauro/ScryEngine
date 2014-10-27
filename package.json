@@ -1,0 +1,14 @@
+{
+    "name": "ScryEngine",
+    "version": "0.0.0",
+    "description": "",
+    "author": "David Mauro <email@dmauro.com> (http://dmaurolizer.com)",
+    "engines": {
+        "node": "0.x"
+    },
+    "devDependencies": {
+        "mocha": "2.0.x",
+        "should": "3.3.x",
+        "assert": "1.1.x"
+    }
+}
