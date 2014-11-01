@@ -1,0 +1,30 @@
+{
+  "name": "ScryEngine",
+  "version": "0.0.0",
+  "homepage": "https://github.com/dmauro/ScryEngine",
+  "authors": [
+    "David Mauro <email@dmauro.com>"
+  ],
+  "main": "scryengine-0.0.0.min.js",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "Roguelike"
+  ],
+  "license": "Apache 2.0",
+  "ignore": [
+    "**/.*",
+    "*.sh",
+    "*.jar",
+    "bin",
+    "node_modules",
+    "bower_components",
+    "test"
+  ],
+  "dependencies": {
+    "Keypress": "2.x"
+  }
+}
