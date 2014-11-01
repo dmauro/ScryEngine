@@ -25,7 +25,7 @@ class engine.Game
             @map.draw_map() if @map
 
         @action_manager.stop_listening_for_actions = =>
-            keypress.stop_listening()
+            keypress?.stop_listening()
 
     _create_from_constructor_string: (string, args...) ->
         constructor = engine.utils.constructor_from_string string
@@ -75,7 +75,7 @@ class engine.Game
         player_character.listen_for_actions_handler = (success_callback, failure_callback) =>
             @player_action_success_callback = success_callback
             @player_action_failure_callback = failure_callback
-            keypress.listen()
+            keypress?.listen()
         player_character.offerred_turn_handler = =>
             # Every time the player is offered a turn we will auto-save
             @quicksave()
@@ -180,7 +180,7 @@ class engine.Game
 
         for binding in bindings
             ((binding)=>
-                keypress.combo binding.keys, =>
+                keypress?.combo binding.keys, =>
                     @action_manager.do_action player, binding.action, binding.data or {}, (time) =>
                         @player_action_success_callback time
                     , (error_message) =>
@@ -188,5 +188,5 @@ class engine.Game
                 , true
             )(binding)
 
-        keypress.combo "escape", =>
+        keypress?.combo "escape", =>
             @exit()

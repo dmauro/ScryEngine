@@ -16,16 +16,16 @@ class engine.Application
                 text    : "Continue Game"
                 selection_callback  : =>
                     menu.dismiss =>
-                        data = localStorage.getItem "quicksave"
-                        data = data or localStorage.getItem "fullsave"
+                        data = localStorage?.getItem "quicksave"
+                        data = data or localStorage?.getItem "fullsave"
                         @continue_game data
         ]
         menu.show()
 
     _save_game_data_locally: (data) ->
         serial_data = JSON.stringify data
-        localStorage.setItem "fullsave", serial_data
-        localStorage.removeItem "quicksave"
+        localStorage?.setItem "fullsave", serial_data
+        localStorage?.removeItem "quicksave"
 
     _save_game_data_remotely: (data, callback) ->
         serial_data = JSON.stringify data
@@ -42,7 +42,7 @@ class engine.Application
 
         @game.quicksave_handler = (data) =>
             serial_data = JSON.stringify data
-            localStorage.setItem "quicksave", serial_data
+            localStorage?.setItem "quicksave", serial_data
 
         @game.fullsave_handler = (data) =>
             @_save_game_data_locally data

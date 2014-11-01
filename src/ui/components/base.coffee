@@ -61,12 +61,12 @@ class engine.ui.components.Base
 
     block_global_binds: ->
         return unless @should_block_global_binds
-        @bindings_previous = keypress.get_registered_combos()
-        keypress.reset()
+        @bindings_previous = keypress?.get_registered_combos()
+        keypress?.reset()
 
     unblock_global_binds: ->
         return unless @should_block_global_binds
-        keypress.register_many @bindings_previous if @bindings_previous?.length
+        keypress?.register_many @bindings_previous if @bindings_previous?.length
 
     has_appeared: ->
 

@@ -64,7 +64,7 @@ describe "Game", ->
             new_game = new engine.Game config, game_save
             new_thing = new_game.registry.get_thing thing.id
             new_thing.maxhp.should.equal 10
-            new_game.timekeeper.things[0].time.should.be.a "number"
+            new_game.timekeeper.things[0].time.should.be.a.Number
         it "should be able to restore from a quick-save", ->
             config = {}
             engine.utils.deep_extend config, engine.config

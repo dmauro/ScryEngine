@@ -49,7 +49,7 @@ class engine.User
         # if a saved game can't be found
         unless @current_game_id
             return callback new engine.Game @
-        save_data = localStorage.getItem "quicksave" or localStorage.getItem "current_save"
+        save_data = localStorage?.getItem "quicksave" or localStorage?.getItem "current_save"
         unless save_data? and JSON.parse(save_data).id is @current_game_id
             @get_gamesave_from_remote @current_game_id, (save_data) =>
                 unless save_data?
