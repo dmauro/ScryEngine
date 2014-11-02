@@ -6,6 +6,8 @@ engine.config =
     player_character_class      : "engine.things.Player"
     thing_registry_class        : "engine.things.Registry"
     timekeeper_class            : "engine.TimeKeeper"
+    storage_class               : "engine.Storage"
+    registry_cache_class        : "engine.Storage"
         
     user_settings: {}
 

@@ -1,5 +1,6 @@
 class engine.Application
     constructor: (@config) ->
+        @storage = engine.utils.create_from_constructor_string @config.storage_class
 
     start: ->
         @user = new engine.User()
@@ -16,33 +17,28 @@ class engine.Application
                 text    : "Continue Game"
                 selection_callback  : =>
                     menu.dismiss =>
-                        data = localStorage?.getItem "quicksave"
-                        data = data or localStorage?.getItem "fullsave"
+                        data = @storage.get_item "quicksave"
+                        data = data or @storage.get_item "fullsave"
                         @continue_game data
         ]
         menu.show()
 
     _save_game_data_locally: (data) ->
         serial_data = JSON.stringify data
-        localStorage?.setItem "fullsave", serial_data
-        localStorage?.removeItem "quicksave"
+        @storage.set_item "fullsave", serial_data
+        @storage.remove_item "quicksave"
 
     _save_game_data_remotely: (data, callback) ->
         serial_data = JSON.stringify data
         # TODO: Send to server
         callback() if typeof callback is "function"
 
-    _create_from_constructor_string: (string, args...) ->
-        constructor = engine.utils.constructor_from_string string
-        instance = new constructor args...
-        return instance
-
     create_game: (game_data_or_seed) ->
-        @game = @_create_from_constructor_string @config.game_class, @config, game_data_or_seed
+        @game = engine.utils.create_from_constructor_string @config.game_class, @config, game_data_or_seed
 
         @game.quicksave_handler = (data) =>
             serial_data = JSON.stringify data
-            localStorage?.setItem "quicksave", serial_data
+            @storage.set_item "quicksave", serial_data
 
         @game.fullsave_handler = (data) =>
             @_save_game_data_locally data
@@ -54,7 +50,7 @@ class engine.Application
             @show_main_menu()
 
     start_new_game: ->
-        char_gen = @_create_from_constructor_string @config.chargen_class, engine.utils.constructor_from_string @config.base_player_thing_class
+        char_gen = engine.utils.create_from_constructor_string @config.chargen_class, engine.utils.constructor_from_string @config.base_player_thing_class
         char_gen.on_complete_callback = (character) =>
             @create_game()
             @game.set_protagonist character

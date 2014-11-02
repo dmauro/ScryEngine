@@ -65,6 +65,11 @@ engine.utils.deep_extend = (target) ->
                 target[property] = value
     return target
 
+engine.utils.create_from_constructor_string = (string, args...) ->
+    constructor = engine.utils.constructor_from_string string
+    instance = new constructor args...
+    return instance
+
 engine.utils.constructor_from_string = (class_string) ->
     class_array = class_string.split "."
     constructor = engine

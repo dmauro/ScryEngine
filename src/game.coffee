@@ -1,14 +1,12 @@
 class engine.Game
     constructor: (config, data_or_seed) ->
-        # TEMP: We should have a better solution for this
-        # for instance, we may want to start with a seed
         if data_or_seed?
             if typeof data_or_seed is "string"
                 @_restore config, data_or_seed
             else
                 @_init config, data_or_seed
         else
-            @_init config
+            @_init config, +new Date()
             
         @perception_manager = new engine.perception.PerceptionManager()
 
@@ -27,17 +25,12 @@ class engine.Game
         @action_manager.stop_listening_for_actions = =>
             keypress?.stop_listening()
 
-    _create_from_constructor_string: (string, args...) ->
-        constructor = engine.utils.constructor_from_string string
-        instance = new constructor args...
-        return instance
-
     _init: (config, seed) ->
         @config = config
         @id = engine.utils.generate_uuid Math.random
-        @seed = if seed? then seed else +new Date()
-        @registry = @_create_from_constructor_string @config.thing_registry_class
-        @timekeeper = @_create_from_constructor_string @config.timekeeper_class
+        @seed = seed
+        @registry = @_create_registry()
+        @timekeeper = engine.utils.create_from_constructor_string @config.timekeeper_class
         #@sprite_distance_manager = new engine.SpriteDistanceManager()
         @world = new engine.geography.World()
         @action_manager = new engine.actions.ActionManager @world
@@ -54,8 +47,8 @@ class engine.Game
 
         @id = data.id
         @seed = data.seed
-        @registry = @_create_from_constructor_string @config.thing_registry_class, data.registry
-        @timekeeper =@_create_from_constructor_string @config.timekeeper_class, data.timekeeper
+        @registry = @_create_registry data.registry
+        @timekeeper = engine.utils.create_from_constructor_string @config.timekeeper_class, data.timekeeper
         #@sprite_distance_manager = new engine.SpriteDistanceManager data.sprite_distance_manager
         @world = new engine.geography.World data.world
         @action_manager = new engine.actions.ActionManager @world
@@ -63,9 +56,13 @@ class engine.Game
 
         @_protagonist_ready @registry.get_thing @world.protagonist
 
+    _create_registry: (data) ->
+        cache = engine.utils.create_from_constructor_string @config.registry_cache_class
+        return engine.utils.create_from_constructor_string @config.thing_registry_class, cache, data
+
     set_protagonist: (creature) ->
         @registry.register_thing creature
-        player_character = @_create_from_constructor_string @config.player_character_class
+        player_character = engine.utils.create_from_constructor_string @config.player_character_class
         @registry.register_thing player_character
         creature.give_sentience player_character
         @world.init player_character, @seed, @config.geography
@@ -97,7 +94,7 @@ class engine.Game
 
     _get_quicksave_data: ->
         ###
-        Quicksave leaves stuff in localStorage that is cached.
+        Quicksave leaves stuff in storage that is cached.
         This is the method that will be called after every action
         by the player.
         ###

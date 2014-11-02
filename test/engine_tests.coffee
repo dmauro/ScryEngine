@@ -66,9 +66,18 @@ describe "Game", ->
             new_thing.maxhp.should.equal 10
             new_game.timekeeper.things[0].time.should.be.a.Number
         it "should be able to restore from a quick-save", ->
+            # Make sure both games use same storage object
+            cache = new engine.Storage()
+            class Game extends engine.Game
+                _create_registry: (data) ->
+                    return new engine.things.Registry cache, data
+
             config = {}
             engine.utils.deep_extend config, engine.config
-            game = helpers.create_game()
+            game = new Game config
+            protagonist = new engine.things.Sentient()
+            game.set_protagonist protagonist
+
             thing_cached = new engine.things.Base()
             thing_cached.maxhp = 10
             game.registry.register_thing thing_cached
@@ -77,18 +86,31 @@ describe "Game", ->
             thing_uncached.maxhp = 8
             game.registry.register_thing thing_uncached
             quick_save = JSON.stringify game._get_quicksave_data()
-            new_game = new engine.Game config, quick_save
+
+            new_game = new Game config, quick_save
             new_game.registry.get_thing(thing_cached.id).maxhp.should.equal 10
             new_game.registry.get_thing(thing_uncached.id).maxhp.should.equal 8
     describe "Timekeeping", ->
         it "can offer turns to things in order", (done) ->
+            turn_count = 0
+
+            finish = ->
+                game.end()
+                thing_1.turns_taken.should.equal 2
+                thing_2.turns_taken.should.equal 3
+                game.timekeeper.time.should.equal 6
+                done()
             class Brain extends engine.things.Brain
                 take_turn: (callback) ->
-                    setTimeout(=>
-                        host = @registry.get_thing @host
-                        host.turns_taken += 1
-                        return callback host.time_for_action
-                    , 10)
+                    if turn_count >= 5
+                        finish()
+                    else
+                        turn_count += 1
+                        setTimeout(=>
+                            host = @registry.get_thing @host
+                            host.turns_taken += 1
+                            return callback host.time_for_action
+                        , 1)
             thing_1 = new engine.things.Sentient()
             thing_2 = new engine.things.Sentient()
             thing_1.time_for_action = 3
@@ -108,13 +130,7 @@ describe "Game", ->
             thing_1.give_sentience brain_1
             thing_2.give_sentience brain_2
             game.timekeeper.start()
-            setTimeout(->
-                game.end()
-                thing_1.turns_taken.should.equal 2
-                thing_2.turns_taken.should.equal 3
-                game.timekeeper.time.should.equal 6
-                done()
-            , 59) # This amount of time should let 5 turns fire total
+
         it "in the event of a tie, the thing that went less recently goes first", (done) ->
             class Brain extends engine.things.Brain
                 take_turn: (callback) ->
@@ -707,13 +723,15 @@ describe "Things", ->
             assert.ok thing == registry.get_thing(0)
         it "can cache a thing that is registered", ->
             thing = new engine.things.Base()
-            registry = new engine.things.Registry()
+            cache = new engine.Storage()
+            registry = new engine.things.Registry cache
             registry.register_thing thing
             registry.cache_thing thing._id
             assert.ok registry.things[0] == null
         it "can uncache something that has been cached", ->
             thing = new engine.things.Base()
-            registry = new engine.things.Registry()
+            cache = new engine.Storage()
+            registry = new engine.things.Registry cache
             thing.maxhp = 10
             registry.register_thing thing
             id = thing._id
@@ -724,10 +742,11 @@ describe "Things", ->
             assert.ok thing == cache_thing
         it "can create save data and be recovered from it", ->
             thing = new engine.things.Base()
-            registry = new engine.things.Registry()
+            cache = new engine.Storage()
+            registry = new engine.things.Registry cache
             registry.register_thing thing
             save_data = JSON.stringify registry.get_save_data()
-            registry = new engine.things.Registry JSON.parse save_data
+            registry = new engine.things.Registry cache, JSON.parse save_data
             assert.ok JSON.stringify(thing.get_save_data()) == JSON.stringify(registry.get_thing(0).get_save_data())
 
     describe "Message Console", ->
