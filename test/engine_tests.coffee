@@ -757,20 +757,6 @@ describe "Things", ->
             game.message_console.messages[0].should.equal "Q: 2 + 2 = what?"
 
     describe "Action Manager", ->
-        it "calls stop_listening_for_actions if actor is a Player", ->
-            registry = new engine.things.Registry()
-            brain = new engine.things.Player()
-            actor = new engine.things.Sentient()
-            registry.register_thing brain
-            registry.register_thing actor
-            actor.give_sentience brain
-            action_manager = new engine.actions.ActionManager()
-            count = 0
-            action_manager.stop_listening_for_actions = ->
-                count += 1
-            action_manager.do_action brain, engine.actions.Base
-            count.should.equal 1
-
         it "calls the do method of an action", ->
             registry = new engine.things.Registry()
             brain = new engine.things.Brain()

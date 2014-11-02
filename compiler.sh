@@ -9,6 +9,7 @@ touch bin/engine.coffee
 paste -s -d '\n' \
     src/namespace.coffee \
     src/storage.coffee \
+    src/input/keyboard_manager.coffee \
     src/utils.coffee \
     src/utils/matrix_array.coffee \
     src/utils/relationship_dictionary.coffee \

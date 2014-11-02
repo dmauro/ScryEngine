@@ -1,5 +1,4 @@
 class engine.ui.components.Base
-    should_block_global_binds: false
     styles: []
 
     constructor: (@parent_component) ->
@@ -24,7 +23,6 @@ class engine.ui.components.Base
             
         for component in @sub_components
             component.render()
-        @block_global_binds()
         @append_component()
         for component in @sub_components
             component.show null, true
@@ -46,7 +44,6 @@ class engine.ui.components.Base
                 component.dismiss null, true
             $(window).off "resize.#{@namespace}"
             @remove_component()
-            @unblock_global_binds()
             if @data_source
                 @data_source.remove()
             callback() if typeof callback is "function"
@@ -58,15 +55,6 @@ class engine.ui.components.Base
 
     create_element: ->
         return crel arguments...
-
-    block_global_binds: ->
-        return unless @should_block_global_binds
-        @bindings_previous = keypress?.get_registered_combos()
-        keypress?.reset()
-
-    unblock_global_binds: ->
-        return unless @should_block_global_binds
-        keypress?.register_many @bindings_previous if @bindings_previous?.length
 
     has_appeared: ->
 

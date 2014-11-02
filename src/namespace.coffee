@@ -18,3 +18,4 @@ engine =
     maps        : {}
     perception  : {}
     random      : {}
+    input       : {}

@@ -22,9 +22,6 @@ class engine.Game
         @timekeeper.turn_offered_handler = =>
             @map.draw_map() if @map
 
-        @action_manager.stop_listening_for_actions = =>
-            keypress?.stop_listening()
-
     _init: (config, seed) ->
         @config = config
         @id = engine.utils.generate_uuid Math.random
@@ -60,23 +57,72 @@ class engine.Game
         cache = engine.utils.create_from_constructor_string @config.registry_cache_class
         return engine.utils.create_from_constructor_string @config.thing_registry_class, cache, data
 
-    set_protagonist: (creature) ->
-        @registry.register_thing creature
-        player_character = engine.utils.create_from_constructor_string @config.player_character_class
-        @registry.register_thing player_character
-        creature.give_sentience player_character
-        @world.init player_character, @seed, @config.geography
-        @_protagonist_ready player_character
+    _setup_keyboard_manager: ->
+        @keyboard_manager = new engine.input.KeyboardManager()
+        # TODO: Send actual bindings
+        @player_keyboard_input = @keyboard_manager.bind_input_layer @player_action_mappings, false
+        #@global_ui_keyboard_input = @keyboard_manager.bind_input_layer undefined, false
+
+    _define_player_action_mappings: (player) ->
+        bindings = [
+                name    : "walk_north"
+                action  : engine.actions.Walk
+                data    :
+                    x : 0
+                    y : -1
+            ,
+                name    : "walk_west"
+                action  : engine.actions.Walk
+                data    :
+                    x : -1
+                    y : 0
+            ,
+                name    : "walk_south"
+                action  : engine.actions.Walk
+                data    :
+                    x : 0
+                    y : 1
+            ,
+                name    : "walk_east"
+                action  : engine.actions.Walk
+                data    :
+                    x : 1
+                    y : 0
+        ]
+
+        # TODO: Get key inputs from config instead of hard-coding
+        key_mappings =
+            "walk_north"    : "w"
+            "walk_west"     : "a"
+            "walk_south"    : "s"
+            "walk_east"     : "d"
+
+        @player_action_mappings = {}
+        for binding in bindings
+            ((binding)=>
+                keys = key_mappings[binding.name]
+                @player_action_mappings[keys] = =>
+                    @_player_input_off()
+                    @action_manager.do_action player, binding.action, binding.data or {}, (time) =>
+                        @player_action_success_callback time
+                    , (error_message) =>
+                        @_player_input_on()
+                        @player_action_failure_callback error_message
+            )(binding)
 
     _protagonist_ready: (player_character) ->
         player_character.listen_for_actions_handler = (success_callback, failure_callback) =>
             @player_action_success_callback = success_callback
             @player_action_failure_callback = failure_callback
-            keypress?.listen()
+            # Start listening for input
+            @_setup_keyboard_manager()
+
         player_character.offerred_turn_handler = =>
             # Every time the player is offered a turn we will auto-save
             @quicksave()
-        @_bind_player_actions player_character
+            # And allow them input
+            @_player_input_on()
+        @_define_player_action_mappings player_character
         @world.protagonist_ready player_character
 
     _get_save_data: (is_quicksave=false) ->
@@ -107,6 +153,20 @@ class engine.Game
         it will be a little slower.
         ###
         return @_get_save_data false
+
+    _player_input_on: ->
+        @player_keyboard_input.on()
+
+    _player_input_off: ->
+        @player_keyboard_input.off()
+
+    set_protagonist: (creature) ->
+        @registry.register_thing creature
+        player_character = engine.utils.create_from_constructor_string @config.player_character_class
+        @registry.register_thing player_character
+        creature.give_sentience player_character
+        @world.init player_character, @seed, @config.geography
+        @_protagonist_ready player_character
 
     quicksave: ->
         # Local only save that relies on cached things for speed
@@ -145,45 +205,3 @@ class engine.Game
         @world.remove()
         @timekeeper.remove()
         @map.dismiss()
-
-    _bind_player_actions: (player) ->
-        # Example bindings for now
-        # This will get pulled in from config?
-        bindings = [
-                keys    : "w"
-                action  : engine.actions.Walk
-                data    :
-                    x : 0
-                    y : -1
-            ,
-                keys    : "a"
-                action  : engine.actions.Walk
-                data    :
-                    x : -1
-                    y : 0
-            ,
-                keys    : "s"
-                action  : engine.actions.Walk
-                data    :
-                    x : 0
-                    y : 1
-            ,
-                keys    : "d"
-                action  : engine.actions.Walk
-                data    :
-                    x : 1
-                    y : 0
-        ]
-
-        for binding in bindings
-            ((binding)=>
-                keypress?.combo binding.keys, =>
-                    @action_manager.do_action player, binding.action, binding.data or {}, (time) =>
-                        @player_action_success_callback time
-                    , (error_message) =>
-                        @player_action_failure_callback error_message
-                , true
-            )(binding)
-
-        keypress?.combo "escape", =>
-            @exit()
