@@ -115,13 +115,14 @@ class engine.Game
             @player_action_success_callback = success_callback
             @player_action_failure_callback = failure_callback
             # Start listening for input
-            @_setup_keyboard_manager()
+            @_player_input_on()
 
         player_character.offerred_turn_handler = =>
             # Every time the player is offered a turn we will auto-save
             @quicksave()
             # And allow them input
             @_player_input_on()
+        @_setup_keyboard_manager()
         @_define_player_action_mappings player_character
         @world.protagonist_ready player_character
 

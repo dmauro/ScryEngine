@@ -103,7 +103,6 @@ class engine.ui.components.TileMap extends engine.ui.components.Base
         # TEMP: Just drawing the hero in the center as a single block for now...
         foreground_context = @foreground_element.getContext "2d"
         foreground_context.fillStyle = "rgba(#{engine.utils.hex_to_rgb '#00FF00'}, 1)"
-        console.log "FILL STYLE: #{foreground_context.fillStyle}"
         foreground_context.fillRect @data_source.view_width * @data_source.tile_width, @data_source.view_height * @data_source.tile_height, @data_source.tile_width, @data_source.tile_height
 
     draw_lighting: (x_diff, y_diff, did_z_change, updated) ->

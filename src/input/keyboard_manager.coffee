@@ -10,7 +10,7 @@ class engine.input.KeyboardInputLayer
         # is_blocking prevents layers below from receiving key inputs
         @is_blocking = true
         if keypress?
-            @bindings = keypress.Listener element
+            @bindings = new keypress.Listener element
 
     bind_actions: (key_bindings) ->
         if keypress?

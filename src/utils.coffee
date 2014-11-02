@@ -4,6 +4,23 @@
 
 # TODO: Clean this up a bit. Move map utilities out, this should be more generic.
 
+# This function needs the root object to build everything
+((root) ->
+    engine.utils.constructor_from_string = (class_string) ->
+        class_array = class_string.split "."
+
+        # For testing out of browser
+        if root and window? and root is window
+            constructor = root
+        else if exports
+            constructor = exports
+            class_array.shift()
+
+        while class_array.length
+            constructor = constructor[class_array.shift()]
+        return constructor
+)(this)
+
 engine.utils.multiply_hex_number = (hex, multiplier) ->
     r = parseInt hex.substr(0, 2), 16
     g = parseInt hex.substr(2, 2), 16
@@ -69,15 +86,6 @@ engine.utils.create_from_constructor_string = (string, args...) ->
     constructor = engine.utils.constructor_from_string string
     instance = new constructor args...
     return instance
-
-engine.utils.constructor_from_string = (class_string) ->
-    class_array = class_string.split "."
-    constructor = engine
-    # Pop off the existing "engine"
-    class_array.shift()
-    while class_array.length
-        constructor = constructor[class_array.shift()]
-    return constructor
 
 engine.utils.generate_uuid = (random) ->
     #RFC4122 v4 Random UUID
