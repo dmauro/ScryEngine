@@ -57,12 +57,6 @@ class engine.Game
         cache = engine.utils.create_from_constructor_string @config.registry_cache_class
         return engine.utils.create_from_constructor_string @config.thing_registry_class, cache, data
 
-    _setup_keyboard_manager: ->
-        @keyboard_manager = new engine.input.KeyboardManager()
-        # TODO: Send actual bindings
-        @player_keyboard_input = @keyboard_manager.bind_input_layer @player_action_mappings, false
-        #@global_ui_keyboard_input = @keyboard_manager.bind_input_layer undefined, false
-
     _define_player_action_mappings: (player) ->
         bindings = [
                 name    : "walk_north"
@@ -110,20 +104,30 @@ class engine.Game
                         @player_action_failure_callback error_message
             )(binding)
 
+    _setup_keyboard_manager: ->
+        @keyboard_manager = new engine.input.KeyboardManager()
+        # TODO: Send actual bindings
+        @player_keyboard_input = @keyboard_manager.bind_input_layer @player_action_mappings, false
+        #@global_ui_keyboard_input = @keyboard_manager.bind_input_layer undefined, false
+
+    _player_input_on: ->
+        @player_keyboard_input.on()
+
+    _player_input_off: ->
+        @player_keyboard_input.off()
+
     _protagonist_ready: (player_character) ->
         player_character.listen_for_actions_handler = (success_callback, failure_callback) =>
             @player_action_success_callback = success_callback
             @player_action_failure_callback = failure_callback
-            # Start listening for input
             @_player_input_on()
 
         player_character.offerred_turn_handler = =>
             # Every time the player is offered a turn we will auto-save
             @quicksave()
-            # And allow them input
-            @_player_input_on()
-        @_setup_keyboard_manager()
+
         @_define_player_action_mappings player_character
+        @_setup_keyboard_manager()
         @world.protagonist_ready player_character
 
     _get_save_data: (is_quicksave=false) ->
@@ -154,12 +158,6 @@ class engine.Game
         it will be a little slower.
         ###
         return @_get_save_data false
-
-    _player_input_on: ->
-        @player_keyboard_input.on()
-
-    _player_input_off: ->
-        @player_keyboard_input.off()
 
     set_protagonist: (creature) ->
         @registry.register_thing creature
