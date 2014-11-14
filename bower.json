@@ -25,6 +25,7 @@
     "test"
   ],
   "dependencies": {
-    "Keypress": "2.x"
+    "Keypress": "2.x",
+    "crel": "2.x"
   }
 }
