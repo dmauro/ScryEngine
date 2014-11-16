@@ -10,6 +10,7 @@ engine =
     geography   :
         zones   : {}
         tiles   : {}
+    lighting    : {}
     sentience   : {}
     things      : {}
     ui          :

@@ -61,7 +61,15 @@ describe "Game", ->
             game.registry.register_thing thing
             game.registry.register_thing brain
             game_save = JSON.stringify game._get_save_data()
-            new_game = new engine.Game config, game_save
+
+            # Transfer storage to new game registry
+            class Game extends engine.Game
+                _create_registry: (data) ->
+                    Registry = @constructor_for_name "registry"
+                    debugger
+                    return new Registry data, game.registry.cache
+
+            new_game = new Game config, game_save
             new_thing = new_game.registry.get_thing thing.id
             new_thing.maxhp.should.equal 10
             new_game.timekeeper.things[0].time.should.be.a.Number
@@ -70,7 +78,8 @@ describe "Game", ->
             cache = new engine.Storage()
             class Game extends engine.Game
                 _create_registry: (data) ->
-                    return new engine.things.Registry cache, data
+                    debugger
+                    return new engine.things.Registry data, cache
 
             config = {}
             engine.utils.deep_extend config, engine.config
@@ -86,10 +95,13 @@ describe "Game", ->
             thing_uncached.maxhp = 8
             game.registry.register_thing thing_uncached
             quick_save = JSON.stringify game._get_quicksave_data()
+            debugger
 
             new_game = new Game config, quick_save
-            new_game.registry.get_thing(thing_cached.id).maxhp.should.equal 10
-            new_game.registry.get_thing(thing_uncached.id).maxhp.should.equal 8
+            cached = new_game.registry.get_thing thing_cached.id
+            cached.maxhp.should.equal 10
+            uncached = new_game.registry.get_thing thing_uncached.id
+            uncached.maxhp.should.equal 8
     describe "Timekeeping", ->
         it "can offer turns to things in order", (done) ->
             turn_count = 0
@@ -724,14 +736,14 @@ describe "Things", ->
         it "can cache a thing that is registered", ->
             thing = new engine.things.Base()
             cache = new engine.Storage()
-            registry = new engine.things.Registry cache
+            registry = new engine.things.Registry null, cache
             registry.register_thing thing
             registry.cache_thing thing._id
             assert.ok registry.things[0] == null
         it "can uncache something that has been cached", ->
             thing = new engine.things.Base()
             cache = new engine.Storage()
-            registry = new engine.things.Registry cache
+            registry = new engine.things.Registry null, cache
             thing.maxhp = 10
             registry.register_thing thing
             id = thing._id
@@ -743,10 +755,10 @@ describe "Things", ->
         it "can create save data and be recovered from it", ->
             thing = new engine.things.Base()
             cache = new engine.Storage()
-            registry = new engine.things.Registry cache
+            registry = new engine.things.Registry null, cache
             registry.register_thing thing
             save_data = JSON.stringify registry.get_save_data()
-            registry = new engine.things.Registry cache, JSON.parse save_data
+            registry = new engine.things.Registry JSON.parse save_data, cache
             assert.ok JSON.stringify(thing.get_save_data()) == JSON.stringify(registry.get_thing(0).get_save_data())
 
     describe "Message Console", ->

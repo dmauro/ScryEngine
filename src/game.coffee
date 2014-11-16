@@ -8,7 +8,10 @@ class engine.Game
         else
             @_init config, +new Date()
             
-        @perception_manager = new engine.perception.PerceptionManager()
+        ActionManager = @constructor_for_name "action_manager"
+        @action_manager = new ActionManager @world
+        PerceptionManager = @constructor_for_name "perception_manager"
+        @perception_manager = new PerceptionManager()
 
         @timekeeper.bind_to_registry @registry
         @world.bind_to_registry @registry
@@ -22,16 +25,40 @@ class engine.Game
         @timekeeper.turn_offered_handler = =>
             @map.draw_map() if @map
 
+    constructor_for_name: (name) ->
+        switch name
+            when "perception_manager"
+                return engine.perception.PerceptionManager
+            when "timekeeper"
+                return engine.TimeKeeper
+            when "world"
+                return engine.geography.World
+            when "action_manager"
+                return engine.actions.ActionManager
+            when "message_console"
+                return engine.MessageConsole
+            when "registry"
+                return engine.things.Registry
+            when "keyboard_manager"
+                return engine.input.KeyboardManager
+            when "map"
+                return engine.ui.components.TileMap
+            when "map_data_source"
+                return engine.ui.components.data_sources.TileMapDataSource
+            when "player_character"
+                return engine.things.Player
+
     _init: (config, seed) ->
         @config = config
         @id = engine.utils.generate_uuid Math.random
-        @seed = seed
+        @seed = seed # currently unused
+        TimeKeeper = @constructor_for_name "timekeeper"
+        World = @constructor_for_name "world"
+        MessageConsole = @constructor_for_name "message_console"
         @registry = @_create_registry()
-        @timekeeper = engine.utils.create_from_constructor_string @config.timekeeper_class
-        #@sprite_distance_manager = new engine.SpriteDistanceManager()
-        @world = new engine.geography.World()
-        @action_manager = new engine.actions.ActionManager @world
-        @message_console = new engine.MessageConsole()
+        @timekeeper = new TimeKeeper()
+        @world = new World()
+        @message_console = new MessageConsole()
 
     _restore: (config, data) ->
         data = JSON.parse data if typeof data is "string"
@@ -44,18 +71,19 @@ class engine.Game
 
         @id = data.id
         @seed = data.seed
+        TimeKeeper = @constructor_for_name "timekeeper"
+        World = @constructor_for_name "world"
+        MessageConsole = @constructor_for_name "message_console"
         @registry = @_create_registry data.registry
-        @timekeeper = engine.utils.create_from_constructor_string @config.timekeeper_class, data.timekeeper
-        #@sprite_distance_manager = new engine.SpriteDistanceManager data.sprite_distance_manager
-        @world = new engine.geography.World data.world
-        @action_manager = new engine.actions.ActionManager @world
-        @message_console = new engine.MessageConsole data.message_console
+        @timekeeper = new TimeKeeper data.timekeeper
+        @world = new World data.world
+        @message_console = new MessageConsole data.message_console
 
         @_protagonist_ready @registry.get_thing @world.protagonist
 
     _create_registry: (data) ->
-        cache = engine.utils.create_from_constructor_string @config.registry_cache_class
-        return engine.utils.create_from_constructor_string @config.thing_registry_class, cache, data
+        Registry = @constructor_for_name "registry"
+        return new Registry data
 
     _define_player_action_mappings: (player) ->
         bindings = [
@@ -105,7 +133,8 @@ class engine.Game
             )(binding)
 
     _setup_keyboard_manager: ->
-        @keyboard_manager = new engine.input.KeyboardManager()
+        KeyboardManager = @constructor_for_name "keyboard_manager"
+        @keyboard_manager = new KeyboardManager()
         # TODO: Send actual bindings
         @player_keyboard_input = @keyboard_manager.bind_input_layer @player_action_mappings, false
         #@global_ui_keyboard_input = @keyboard_manager.bind_input_layer undefined, false
@@ -161,7 +190,8 @@ class engine.Game
 
     set_protagonist: (creature) ->
         @registry.register_thing creature
-        player_character = engine.utils.create_from_constructor_string @config.player_character_class
+        PlayerCharacter = @constructor_for_name "player_character"
+        player_character = new PlayerCharacter()
         @registry.register_thing player_character
         creature.give_sentience player_character
         @world.init player_character, @seed, @config.geography
@@ -183,8 +213,10 @@ class engine.Game
 
     show_game_ui: ->
         # TODO: Render UI components
-        map = new engine.ui.components.TileMap
-        map.data_source = new engine.ui.components.data_sources.TileMapDataSource @world, @config.ui.tile_map
+        Map = @constructor_for_name "map"
+        MapDataSource = @constructor_for_name "map_data_source"
+        map = new Map()
+        map.data_source = new MapDataSource @world, @config.ui.tile_map
         map.show()
         @map = map
 

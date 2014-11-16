@@ -1,10 +1,22 @@
 class engine.CharacterGenerator
-    constructor: (base_class) ->
-        @character = new base_class()
+    constructor: () ->
+        PlayerThing = @constructor_for_name "player_thing"
+        @character = new PlayerThing()
+
+    constructor_for_name: (name) ->
+        switch name
+            when "player_thing"
+                return engine.things.Sentient
+            when "query_ui"
+                return engine.ui.components.Query
+            when "query_ui_data_source"
+                return engine.ui.components.data_sources.QueryDataSource
 
     start: ->
-        charname_query = new engine.ui.components.Query()
-        charname_query.data_source = new engine.ui.components.data_sources.QueryDataSource "What's your character's name?", null, [
+        Query = @constructor_for_name "query_ui"
+        QueryDataSource = @constructor_for_name "query_ui_data_source"
+        charname_query = new Query()
+        charname_query.data_source = new QueryDataSource "What's your character's name?", null, [
             {
                 name    : "character_name"
             }

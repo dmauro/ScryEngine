@@ -28,7 +28,8 @@ paste -s -d '\n' \
     src/brain_manager.coffee \
     src/timekeeper.coffee \
     src/sprite_distance_manager.coffee \
-    src/lighting_manager.coffee \
+    src/lighting/lighting_manager.coffee \
+    src/lighting/light_tile.coffee \
     src/perception/perceived.coffee \
     src/perception/perception_filter.coffee \
     src/perception/perception_manager.coffee \

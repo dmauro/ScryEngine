@@ -10,11 +10,19 @@ class engine.geography.World
             @_restore data
         else
             @_init()
-        @lighting_manager = new engine.LightingManager()
+        LightingManager = @constructor_for_name "lighting_manager"
+        @lighting_manager = new LightingManager()
         @lighting_manager.get_tile_at_handler = (x, y) =>
             return @get_tile_at x, y
         @lighting_manager.has_los_between_points_handler = =>
             return @has_visual_los_between_points arguments...
+
+    constructor_for_name: (name) ->
+        switch name
+            when "lighting_manager"
+                return engine.lighting.LightingManager
+            when "stratum"
+                return engine.geography.Stratum
 
     _restore: (data) ->
         data = JSON.parse data if typeof data is "string"
@@ -210,7 +218,8 @@ class engine.geography.World
     ##########
 
     _create_stratum: (data) ->
-        stratum = new engine.geography.Stratum data
+        Stratum = @constructor_for_name "stratum"
+        stratum = new Stratum data
         stratum.zone_size = @zone_size
         stratum.constructor_manager = @constructor_manager
         stratum.get_seed_for_coordinate_handler = (zone_x, zone_y) =>

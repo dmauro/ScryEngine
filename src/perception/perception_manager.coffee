@@ -12,7 +12,13 @@ it was making a spot check against.
 
 class engine.perception.PerceptionManager
     constructor: ->
-        @brain_manager = new engine.BrainManager()
+        BrainManager = @constructor_for_name "brain_manager"
+        @brain_manager = new BrainManager()
+
+    constructor_for_name: (name) ->
+        switch name
+            when "brain_manager"
+                return engine.BrainManager
 
     bind_to_registry: (registry) ->
         @registry = registry

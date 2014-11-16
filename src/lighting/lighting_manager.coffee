@@ -7,7 +7,7 @@ manager does not need to consider z coordinates
 
 max_distance_for_brightest_light = 30
 
-class engine.LightingManager extends engine.RegistrySubcategory
+class engine.lighting.LightingManager extends engine.RegistrySubcategory
     constructor: ->
         @light_map = new engine.utils.MatrixArray()
         @subcategory_cnames = ["engine.things.LightSource"]
@@ -16,6 +16,11 @@ class engine.LightingManager extends engine.RegistrySubcategory
     ###########
     # Helpers #
     ###########
+
+    constructor_for_name: (name) ->
+        switch name
+            when "light_tile"
+                return engine.lighting.LightTile
 
     _get_light_sources_that_need_updates: ->
         need_updates = []
@@ -91,6 +96,7 @@ class engine.LightingManager extends engine.RegistrySubcategory
         return unless light_source.has_target
 
         tile_positions = @_get_affected_tile_positions light_source
+        LightTile = @constructor_for_name "light_tile"
         for position in tile_positions
             x = position[0]
             y = position[1]
@@ -125,6 +131,7 @@ class engine.LightingManager extends engine.RegistrySubcategory
         is_new_max = intensity > prev_intensity
 
         # Larger radius
+        LightTile = @constructor_for_name "light_tile"
         for position in max_affected
             light_tile = @light_map.get_value_at position[0], position[1]
             unless light_tile
@@ -160,6 +167,7 @@ class engine.LightingManager extends engine.RegistrySubcategory
         positions = @_get_affected_positions_for_origin_and_radius x, y, @_calculate_radius_for_light_source light_source
         prev_positions = @_get_affected_positions_for_origin_and_radius prev_x, prev_y, @_calculate_radius_for_light_source light_source
 
+        LightTile = @constructor_for_name "light_tile"
         for position in prev_positions
             light_tile = @light_map.get_value_at position[0], position[1]
             light_tile.needs_update = true
@@ -213,25 +221,3 @@ class engine.LightingManager extends engine.RegistrySubcategory
         light_color = light_tile.color if light_tile
         light_level = light_tile.amount if light_tile
         return light_color
-
-################
-# Helper class #
-################
-
-class LightTile
-    constructor: ->
-        @light_sources = []
-        @reset()
-
-    reset: ->
-        @amount = 0
-        @color = "000000"
-        @needs_update = false
-
-    add_light_source: (light_source) ->
-        @light_sources.push light_source unless light_source in @light_sources
-
-    add_light: (color, brightness) ->
-        @amount += brightness
-        color = engine.utils.multiply_hex_number color, brightness
-        @color = engine.utils.add_hex_colors @color, color

@@ -1,14 +1,33 @@
 class engine.Application
     constructor: (@config) ->
-        @storage = engine.utils.create_from_constructor_string @config.storage_class
+        Storage = @constructor_for_name "storage"
+        @storage = new Storage @config.storage_class
+
+    constructor_for_name: (name) ->
+        switch name
+            when "game"
+                return engine.game
+            when "char_gen"
+                return engine.CharacterGenerator
+            when "storage"
+                return engine.Storage
+            when "user"
+                return engine.User
+            when "menu_ui"
+                return engine.ui.components.Menu()
+            when "menu_data_source"
+                return engine.ui.components.data_sources.MenuDataSource()
 
     start: ->
-        @user = new engine.User()
+        User = @constructor_for_name "user"
+        @user = new User()
         @show_main_menu()
 
     show_main_menu: ->
-        menu = new engine.ui.components.Menu()
-        menu.data_source = new engine.ui.components.data_sources.MenuDataSource [
+        Menu = @constructor_for_name "menu_ui"
+        MenuDataSource = @constructor_for_name "menu_data_source"
+        menu = new Menu()
+        menu.data_source = new MenuDataSource [
                 text    : "New Game"
                 selection_callback  : =>
                     menu.dismiss =>
@@ -34,7 +53,8 @@ class engine.Application
         callback() if typeof callback is "function"
 
     create_game: (game_data_or_seed) ->
-        @game = engine.utils.create_from_constructor_string @config.game_class, @config, game_data_or_seed
+        Game = @constructor_for_name "game"
+        @game = new Game @config, game_data_or_seed
 
         @game.quicksave_handler = (data) =>
             serial_data = JSON.stringify data
@@ -50,7 +70,8 @@ class engine.Application
             @show_main_menu()
 
     start_new_game: ->
-        char_gen = engine.utils.create_from_constructor_string @config.chargen_class, engine.utils.constructor_from_string @config.base_player_thing_class
+        CharGen = @constructor_for_name "char_gen"
+        char_gen = new CharGen()
         char_gen.on_complete_callback = (character) =>
             @create_game()
             @game.set_protagonist character

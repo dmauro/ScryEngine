@@ -3,8 +3,12 @@
 #########################
 
 class engine.things.Registry extends engine.events.EventEmitter
-    constructor: (@cache, data) ->
+    constructor: (data, @cache) ->
         @things = {}
+        # Cache can be passed in to help with testing
+        unless @cache?
+            Cache = @constructor_for_name "cache"
+            @cache = new Cache()
         if data?
             @_restore data
         else
@@ -12,6 +16,11 @@ class engine.things.Registry extends engine.events.EventEmitter
         for uuid, thing of @things
             continue if thing is null
             thing.activate_method_throughout_chain "registry_available", @
+
+    constructor_for_name: (name) ->
+        switch name
+            when "cache"
+                return engine.Storage
 
     _restore_thing_from_serial_data: (data) ->
         return @constructor_manager.restore_object_from_data data
@@ -62,6 +71,7 @@ class engine.things.Registry extends engine.events.EventEmitter
         @things[thing.id] = thing
 
     unregister_thing: (thing) ->
+        # I should get rid of this
         delete @things[thing.id]
         @trigger new engine.events.Base "unregistered_thing", {id:thing.id, thing:thing}
         if thing instanceof engine.things.Brain
@@ -83,12 +93,14 @@ class engine.things.Registry extends engine.events.EventEmitter
                 @cache.remove_item "thing_cache_#{id}"
 
     uncache_thing: (id) ->
-        thing = @_restore_thing_from_serial_data JSON.parse @cache.get_item "thing_cache_#{id}"
-        @cache.remove_item "thing_cache_#{id}"
-        @things[id] = thing
-        @trigger new engine.events.Base "uncached_thing", {id:id, thing:thing}
-        if thing instanceof engine.things.Brain
-            @trigger new engine.events.Base "uncached_brain", {id:id, thing:thing}
+        data = @cache.get_item "thing_cache_#{id}"
+        if data?
+            thing = @_restore_thing_from_serial_data JSON.parse data
+            @cache.remove_item "thing_cache_#{id}"
+            @things[id] = thing
+            @trigger new engine.events.Base "uncached_thing", {id:id, thing:thing}
+            if thing instanceof engine.things.Brain
+                @trigger new engine.events.Base "uncached_brain", {id:id, thing:thing}
         return thing
 
     get_thing: (id) ->
