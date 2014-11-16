@@ -1,7 +1,7 @@
 class engine.Application
-    constructor: (@config) ->
+    constructor: ->
         Storage = @constructor_for_name "storage"
-        @storage = new Storage @config.storage_class
+        @storage = new Storage()
 
     constructor_for_name: (name) ->
         switch name
@@ -54,7 +54,7 @@ class engine.Application
 
     create_game: (game_data_or_seed) ->
         Game = @constructor_for_name "game"
-        @game = new Game @config, game_data_or_seed
+        @game = new Game game_data_or_seed
 
         @game.quicksave_handler = (data) =>
             serial_data = JSON.stringify data

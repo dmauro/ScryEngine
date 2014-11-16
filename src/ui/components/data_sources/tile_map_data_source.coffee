@@ -12,11 +12,17 @@ class engine.ui.components.data_sources.TileMapDataSource extends engine.ui.comp
     @::__defineSetter__ "data_source", (data_source) ->
         @data_source = data_source
 
-    constructor: (@world, tile_map_config) ->
-        @view_width = tile_map_config.view_width
-        @view_height = tile_map_config.view_height
-        @tile_width = tile_map_config.tile_width
-        @tile_height = tile_map_config.tile_height
+    @::config =
+        tile_width  : 20
+        tile_height : 20
+        view_width  : 24
+        view_height : 16
+
+    constructor: (@world) ->
+        @view_width = @config.view_width
+        @view_height = @config.view_height
+        @tile_width = @config.tile_width
+        @tile_height = @config.tile_height
         @protagonist = @world.get_protagonist()
         @host = @protagonist.get_host()
         @protagonist.on "host_affected", @_host_changed_handler, @

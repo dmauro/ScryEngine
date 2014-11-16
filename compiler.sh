@@ -59,8 +59,6 @@ paste -s -d '\n' \
     src/things/brain.coffee \
     src/things/player.coffee \
     src/things/non_player.coffee \
-    src/config.coffee \
-    src/boot_loader.coffee \
     src/amd.coffee \
     > bin/engine.coffee
 

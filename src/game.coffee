@@ -1,12 +1,12 @@
 class engine.Game
-    constructor: (config, data_or_seed) ->
+    constructor: (data_or_seed) ->
         if data_or_seed?
             if typeof data_or_seed is "string"
-                @_restore config, data_or_seed
+                @_restore data_or_seed
             else
-                @_init config, data_or_seed
+                @_init data_or_seed
         else
-            @_init config, +new Date()
+            @_init +new Date()
             
         ActionManager = @constructor_for_name "action_manager"
         @action_manager = new ActionManager @world
@@ -48,8 +48,7 @@ class engine.Game
             when "player_character"
                 return engine.things.Player
 
-    _init: (config, seed) ->
-        @config = config
+    _init: (seed) ->
         @id = engine.utils.generate_uuid Math.random
         @seed = seed # currently unused
         TimeKeeper = @constructor_for_name "timekeeper"
@@ -60,14 +59,8 @@ class engine.Game
         @world = new World()
         @message_console = new MessageConsole()
 
-    _restore: (config, data) ->
+    _restore: (data) ->
         data = JSON.parse data if typeof data is "string"
-        # We do this to ensure that once a game has started, we
-        # don't override the config even if we update the game.
-        # But we need to update the user settings as they change.
-        updated_user_settings = config.user_settings
-        @config = data.config
-        @config.user_settings = updated_user_settings
 
         @id = data.id
         @seed = data.seed
@@ -163,7 +156,6 @@ class engine.Game
         save_data =
             id                      : @id
             seed                    : @seed
-            config                  : @config
             timekeeper              : @timekeeper.get_save_data is_quicksave
             #sprite_distance_manager : @sprite_distance_manager.get_save_data()
             message_console         : @message_console.get_save_data is_quicksave
@@ -194,7 +186,7 @@ class engine.Game
         player_character = new PlayerCharacter()
         @registry.register_thing player_character
         creature.give_sentience player_character
-        @world.init player_character, @seed, @config.geography
+        @world.init player_character, @seed
         @_protagonist_ready player_character
 
     quicksave: ->
@@ -216,7 +208,7 @@ class engine.Game
         Map = @constructor_for_name "map"
         MapDataSource = @constructor_for_name "map_data_source"
         map = new Map()
-        map.data_source = new MapDataSource @world, @config.ui.tile_map
+        map.data_source = new MapDataSource @world
         map.show()
         @map = map
 

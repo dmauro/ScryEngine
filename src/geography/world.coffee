@@ -17,12 +17,18 @@ class engine.geography.World
         @lighting_manager.has_los_between_points_handler = =>
             return @has_visual_los_between_points arguments...
 
+    @::config =
+        zone_size       : 64
+        loading_buffer  : 64
+
     constructor_for_name: (name) ->
         switch name
             when "lighting_manager"
                 return engine.lighting.LightingManager
             when "stratum"
                 return engine.geography.Stratum
+            when "zone_manager"
+                return engine.geography.ZoneManager
 
     _restore: (data) ->
         data = JSON.parse data if typeof data is "string"
@@ -32,8 +38,8 @@ class engine.geography.World
         @geography_config = JSON.parse data.geography_config
         @loading_buffer = @geography_config.loading_buffer
         @zone_size = @geography_config.zone_size
-        zone_manager_constructor = engine.utils.constructor_from_string @geography_config.zone_manager_class
-        @zone_manager = new zone_manager_constructor data.zone_manager
+        ZoneManager = @constructor_for_name "zone_manager"
+        @zone_manager = new ZoneManager data.zone_manager
         @strata = {}
         for level, stratum_data of data.strata
             @strata[level] = @_create_stratum stratum_data
@@ -50,15 +56,16 @@ class engine.geography.World
         host = protagonist.get_host()
         @_track_protagonist_to host.x, host.y, host.z
 
-    init: (protagonist, seed, geography_config) ->
+    init: (protagonist, seed) ->
         # This should only be called after we've bound it to the registry
         @protagonist = protagonist.id
-        @geography_config = geography_config
-        @loading_buffer = geography_config.loading_buffer
-        @zone_size = geography_config.zone_size
+        @geography_config = {}
+        engine.utils.deep_extend @geography_config, @config
+        @loading_buffer = @geography_config.loading_buffer
+        @zone_size = @geography_config.zone_size
         @seed = seed
-        zone_manager_constructor = engine.utils.constructor_from_string geography_config.zone_manager_class
-        @zone_manager = new zone_manager_constructor()
+        ZoneManager = @constructor_for_name "zone_manager"
+        @zone_manager = new ZoneManager()
         @zone_manager.random = new engine.random.Alea null, [@seed]
         @zone_manager.init()
 

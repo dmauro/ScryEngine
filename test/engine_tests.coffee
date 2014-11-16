@@ -3,10 +3,8 @@ assert = require 'assert'
 engine = require '../bin/engine'
 
 helpers =
-    create_game: (in_config) ->
-        config = {}
-        engine.utils.deep_extend config, engine.config, in_config
-        game = new engine.Game config
+    create_game: ->
+        game = new engine.Game()
         protagonist = new engine.things.Sentient()
         game.set_protagonist protagonist
         return game
@@ -52,8 +50,6 @@ describe "Utils", ->
 describe "Game", ->
     describe "Savestates", ->
         it "should be able to save and restore a game", ->
-            config = {}
-            engine.utils.deep_extend config, engine.config
             game = helpers.create_game()
             thing = new engine.things.Base()
             brain = new engine.things.Brain()
@@ -69,7 +65,7 @@ describe "Game", ->
                     debugger
                     return new Registry data, game.registry.cache
 
-            new_game = new Game config, game_save
+            new_game = new Game game_save
             new_thing = new_game.registry.get_thing thing.id
             new_thing.maxhp.should.equal 10
             new_game.timekeeper.things[0].time.should.be.a.Number
@@ -81,9 +77,7 @@ describe "Game", ->
                     debugger
                     return new engine.things.Registry data, cache
 
-            config = {}
-            engine.utils.deep_extend config, engine.config
-            game = new Game config
+            game = new Game()
             protagonist = new engine.things.Sentient()
             game.set_protagonist protagonist
 
@@ -97,7 +91,7 @@ describe "Game", ->
             quick_save = JSON.stringify game._get_quicksave_data()
             debugger
 
-            new_game = new Game config, quick_save
+            new_game = new Game quick_save
             cached = new_game.registry.get_thing thing_cached.id
             cached.maxhp.should.equal 10
             uncached = new_game.registry.get_thing thing_uncached.id
@@ -132,9 +126,7 @@ describe "Game", ->
             brain_2 = new Brain()
             # We want to make sure we don't have a Player class
             # blocking the timekeeper loop, so don't use game helper
-            config = {}
-            engine.utils.deep_extend config, engine.config
-            game = new engine.Game config
+            game = new engine.Game()
             game.registry.register_thing thing_1
             game.registry.register_thing thing_2
             game.registry.register_thing brain_1
@@ -160,9 +152,7 @@ describe "Game", ->
             brain_2 = new Brain()
             # We want to make sure we don't have a Player class
             # blocking the timekeeper loop, so don't use game helper
-            config = {}
-            engine.utils.deep_extend config, engine.config
-            game = new engine.Game config
+            game = new engine.Game()
             game.registry.register_thing thing_1
             game.registry.register_thing thing_2
             game.registry.register_thing brain_1
@@ -199,13 +189,11 @@ describe "Game", ->
 
 describe "World", ->
     it "can be saved and restored", ->
-        config = {}
-        engine.utils.deep_extend config, engine.config
         game = helpers.create_game()
         thing = new engine.things.Sentient()
         game.set_protagonist thing
         quick_save = JSON.stringify game._get_quicksave_data()
-        game = new engine.Game config, quick_save
+        game = new engine.Game quick_save
         i = 0
         stratum = game.world.strata[0]
         for x, ys of stratum.zones
@@ -485,8 +473,6 @@ describe "Things", ->
             target.trigger new engine.events.Base "damage", {}
             target.is_unconscious.should.equal false
         it "can survive properly through a save and restore", ->
-            config = {}
-            engine.utils.deep_extend config, engine.config
             game = helpers.create_game()
             thing = new engine.things.Base()
             game.registry.register_thing thing
@@ -508,7 +494,7 @@ describe "Things", ->
             thing.hp.should.equal 7
 
             save_data = JSON.stringify game._get_save_data()
-            game = new engine.Game config, save_data
+            game = new engine.Game save_data
             thing = game.registry.get_thing thing.id
             burning = game.registry.get_thing burning.id
             thing.hp.should.equal 7
