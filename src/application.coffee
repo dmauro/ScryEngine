@@ -14,9 +14,9 @@ class engine.Application
             when "user"
                 return engine.User
             when "menu_ui"
-                return engine.ui.components.Menu()
+                return engine.ui.components.Menu
             when "menu_data_source"
-                return engine.ui.components.data_sources.MenuDataSource()
+                return engine.ui.components.data_sources.MenuDataSource
 
     start: ->
         User = @constructor_for_name "user"
