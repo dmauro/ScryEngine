@@ -62,7 +62,6 @@ describe "Game", ->
             class Game extends engine.Game
                 _create_registry: (data) ->
                     Registry = @constructor_for_name "registry"
-                    debugger
                     return new Registry data, game.registry.cache
 
             new_game = new Game game_save
@@ -74,7 +73,6 @@ describe "Game", ->
             cache = new engine.Storage()
             class Game extends engine.Game
                 _create_registry: (data) ->
-                    debugger
                     return new engine.things.Registry data, cache
 
             game = new Game()
@@ -89,7 +87,6 @@ describe "Game", ->
             thing_uncached.maxhp = 8
             game.registry.register_thing thing_uncached
             quick_save = JSON.stringify game._get_quicksave_data()
-            debugger
 
             new_game = new Game quick_save
             cached = new_game.registry.get_thing thing_cached.id

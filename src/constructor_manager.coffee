@@ -26,13 +26,7 @@ class engine.ConstructorManager
         data = JSON.parse(data) if typeof data is "string"
         cname = @cnames[data.c]
         delete data.c
-        cname = cname.split "."
-        class_name = engine
-        # Pop off the existing "engine"
-        cname.shift()
-        while cname.length
-            class_name = class_name[cname.shift()]
-        return new class_name data
+        return engine.utils.create_from_constructor_string cname, data
 
     get_save_data: ->
         return @cnames

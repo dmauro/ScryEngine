@@ -1,7 +1,9 @@
 class engine.Game
     constructor: (data_or_seed) ->
+        is_restoring = false
         if data_or_seed?
             if typeof data_or_seed is "string"
+                is_restoring = true
                 @_restore data_or_seed
             else
                 @_init data_or_seed
@@ -24,6 +26,9 @@ class engine.Game
 
         @timekeeper.turn_offered_handler = =>
             @map.draw_map() if @map
+
+        if is_restoring
+            @_protagonist_ready @registry.get_thing @world.protagonist
 
     constructor_for_name: (name) ->
         switch name
@@ -71,8 +76,6 @@ class engine.Game
         @timekeeper = new TimeKeeper data.timekeeper
         @world = new World data.world
         @message_console = new MessageConsole data.message_console
-
-        @_protagonist_ready @registry.get_thing @world.protagonist
 
     _create_registry: (data) ->
         Registry = @constructor_for_name "registry"

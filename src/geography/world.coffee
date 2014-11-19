@@ -156,8 +156,7 @@ class engine.geography.World
     ###################
 
     _create_sprite_from_string_at: (string, x, y, z) ->
-        constructor = engine.utils.constructor_from_string string
-        sprite = new constructor()
+        sprite = engine.utils.create_from_constructor_string string
         @registry.register_thing sprite
         sprite.move_to x, y, x
         return sprite
