@@ -36,6 +36,7 @@ paste -s -d '\n' \
     src/geography/zone_manager.coffee \
     src/geography/zones/zone.coffee \
     src/geography/tiles/tile.coffee \
+    src/geography/tiles/basic_tiles.coffee \
     src/perception/perception_manager.coffee \
     src/ui/components/component.coffee \
     src/ui/components/menu.coffee \
