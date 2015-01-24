@@ -6,7 +6,7 @@ class engine.Application
     constructor_for_name: (name) ->
         switch name
             when "game"
-                return engine.game
+                return engine.Game
             when "char_gen"
                 return engine.CharacterGenerator
             when "storage"

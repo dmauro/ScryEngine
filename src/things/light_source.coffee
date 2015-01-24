@@ -23,11 +23,11 @@ class engine.things.LightSource extends engine.things.Abstract
     engine.things.define_setter.call @, "intensity", (value) ->
         prev_value = @_intensity
         @_intensity = value
-        @trigger new engine.events.Base "light_intensity_updated", {value:value, prev_value:prev_value}
+        @trigger new engine.events.Event "light_intensity_updated", {value:value, prev_value:prev_value}
 
     engine.things.define_setter.call @, "color", (value) ->
         @_color = value
-        @trigger new engine.events.Base "light_color_updated", {value:value}
+        @trigger new engine.events.Event "light_color_updated", {value:value}
 
     registry_available: (registry) ->
         # If we already have a target, we need to bind to it
@@ -45,7 +45,7 @@ class engine.things.LightSource extends engine.things.Abstract
         target.add_light_source @
         target.on "sprite_moved", @_sprite_moved, @
 
-        @trigger new engine.events.Base "light_applied"
+        @trigger new engine.events.Event "light_applied"
 
     remove: (target) ->
         target = target or @registry.get_thing @_target
@@ -58,4 +58,4 @@ class engine.things.LightSource extends engine.things.Abstract
         @_x = event.x
         @_y = event.y
 
-        @trigger new engine.events.Base "light_position_updated", {x:event.x, y:event.y, prev_x:event.prev_x, prev_y:event.prev_y}
+        @trigger new engine.events.Event "light_position_updated", {x:event.x, y:event.y, prev_x:event.prev_x, prev_y:event.prev_y}

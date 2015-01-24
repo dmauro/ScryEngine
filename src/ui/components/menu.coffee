@@ -1,4 +1,9 @@
-class engine.ui.components.Menu extends engine.ui.components.Base
+###
+Menu
+This component provides a selection of things for
+the user to select from.
+###
+class engine.ui.components.Menu extends engine.ui.components.Component
     styles: ["menu"]
 
     render: ->

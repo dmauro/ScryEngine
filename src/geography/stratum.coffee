@@ -1,6 +1,8 @@
 ###
-This class represents a single
-z-layer in the world.
+Stratum
+A stratum represents a single z-layer in the world.
+This should only be subclassed if added functionality
+is needed.
 ###
 
 ###

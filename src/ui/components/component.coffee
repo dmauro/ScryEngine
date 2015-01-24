@@ -1,4 +1,9 @@
-class engine.ui.components.Base
+###
+Component
+This is the base UI component class that handles the
+presentation logic for a UI component.
+###
+class engine.ui.components.Component
     styles: []
 
     constructor: (@parent_component) ->

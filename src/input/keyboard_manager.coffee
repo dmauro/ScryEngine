@@ -1,9 +1,9 @@
 ###
+KeyboardInputLayer
 This is a helper class that actually handles
 the management of keybindings for a specific
 layer in the keyboard input heirarchy.
 ###
-
 class engine.input.KeyboardInputLayer
     constructor: (element) ->
         @is_on = true
@@ -40,7 +40,6 @@ the library used for capturing keyboard input.
 It will also be in charge of handling modal input
 priority.
 ###
-
 class engine.input.KeyboardManager
     constructor: ->
         @_layers = []

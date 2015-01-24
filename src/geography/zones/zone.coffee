@@ -1,8 +1,20 @@
-class engine.geography.zones.Base
-    @cname = "engine.geography.zones.Base"
+###
+Zone
+The zone is a collection of tiles that is grouped together both for
+performance and to allow for easier "theming" of areas of the world.
+All zones in a world are the same number of tiles squared, and that
+size is determined by the world.
+
+The zone can only contain tiles that are listed in its tile_constructors
+property. They are stored as indices to aid in world persistence.
+
+This is designed to be subclassed by overriding the _init_tiles method.
+###
+class engine.geography.zones.Zone
+    @cname = "engine.geography.zones.Zone"
     
     tile_constructors: [
-        "engine.geography.tiles.Base"
+        "engine.geography.tiles.Tile"
     ]
 
     sprite_constructors: []

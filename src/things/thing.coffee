@@ -46,15 +46,18 @@ engine.things.define_defaults = (defaults) ->
                 return value
 
 ###
-This is our base thing class. All thing classes extend from
-this class or one of its subclasses.
+Thing
+This is our base thing class. A thing is anything that can be thought
+of as having some sort of presence in the game world, excluding the tiles
+themselves, but including things like effects and light. All thing
+classes need to ultimately descend from this class.
 ###
-class engine.things.Base extends engine.events.EventEmitter
+class engine.things.Thing extends engine.events.EventEmitter
     ###
     All classes must have a cname property that is a string
-    representing how to find the class from the window object.
+    representing how to find the class from the root object.
     ###
-    @cname = "engine.things.Base"
+    @cname = "engine.things.Thing"
 
     constructor: (data) ->
         # Allow us to recreate from data
@@ -150,7 +153,7 @@ class engine.things.Base extends engine.events.EventEmitter
         if @_property_modifier_handlers[property]
             hidden_property_name = "__temp_" + property + "_modifier"
             @[hidden_property_name] = value
-            @trigger new engine.events.Base "property_accessed",
+            @trigger new engine.events.Event "property_accessed",
                 property        : property
                 value           : value
                 property_name   : hidden_property_name

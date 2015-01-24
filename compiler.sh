@@ -14,10 +14,11 @@ paste -s -d '\n' \
     src/random.coffee \
     src/application.coffee \
     src/actions/action_manager.coffee \
-    src/actions/base.coffee \
+    src/actions/action.coffee \
     src/actions/move.coffee \
     src/actions/walk.coffee \
-    src/events/base.coffee \
+    src/events/event.coffee \
+    src/events/basic_events.coffee \
     src/events/event_emitter.coffee \
     src/user.coffee \
     src/character_generator.coffee \
@@ -30,23 +31,21 @@ paste -s -d '\n' \
     src/sprite_distance_manager.coffee \
     src/lighting/lighting_manager.coffee \
     src/lighting/light_tile.coffee \
-    src/perception/perceived.coffee \
-    src/perception/perception_filter.coffee \
-    src/perception/perception_manager.coffee \
     src/geography/world.coffee \
     src/geography/stratum.coffee \
     src/geography/zone_manager.coffee \
-    src/geography/zones/base.coffee \
-    src/geography/tiles/base.coffee \
-    src/ui/components/base.coffee \
+    src/geography/zones/zone.coffee \
+    src/geography/tiles/tile.coffee \
+    src/perception/perception_manager.coffee \
+    src/ui/components/component.coffee \
     src/ui/components/menu.coffee \
     src/ui/components/query.coffee \
     src/ui/components/tile_map.coffee \
-    src/ui/components/data_sources/base.coffee \
+    src/ui/components/data_sources/data_source.coffee \
     src/ui/components/data_sources/menu_data_source.coffee \
     src/ui/components/data_sources/query_data_source.coffee \
     src/ui/components/data_sources/tile_map_data_source.coffee \
-    src/things/base.coffee \
+    src/things/thing.coffee \
     src/things/abstract.coffee \
     src/things/light_source.coffee \
     src/things/non_abstract.coffee \

@@ -1,4 +1,4 @@
-class engine.things.NonAbstract extends engine.things.Base
+class engine.things.NonAbstract extends engine.things.Thing
     @cname = "engine.things.NonAbstract"
     
     engine.things.define_defaults.call @,

@@ -1,13 +1,13 @@
 ###
-This class is in charge of calculating
-the lighting of every tile that is active
-based on all light sources. The lighting
-manager does not need to consider z coordinates
+LightingManager
+The lighting manager is in charge of calculating the lighting
+for every tile that is active, based on input from all available
+light sources. It can ignore z values of tiles since we don't
+consider light sources vertically.
 ###
-
-max_distance_for_brightest_light = 30
-
 class engine.lighting.LightingManager extends engine.RegistrySubcategory
+    max_distance_for_brightest_light = 30
+
     constructor: ->
         @light_map = new engine.utils.MatrixArray()
         @subcategory_cnames = ["engine.things.LightSource"]

@@ -51,7 +51,7 @@ describe "Game", ->
     describe "Savestates", ->
         it "should be able to save and restore a game", ->
             game = helpers.create_game()
-            thing = new engine.things.Base()
+            thing = new engine.things.Thing()
             brain = new engine.things.Brain()
             thing.maxhp = 10
             game.registry.register_thing thing
@@ -79,11 +79,11 @@ describe "Game", ->
             protagonist = new engine.things.Sentient()
             game.set_protagonist protagonist
 
-            thing_cached = new engine.things.Base()
+            thing_cached = new engine.things.Thing()
             thing_cached.maxhp = 10
             game.registry.register_thing thing_cached
             game.registry.cache_thing thing_cached.id
-            thing_uncached = new engine.things.Base()
+            thing_uncached = new engine.things.Thing()
             thing_uncached.maxhp = 8
             game.registry.register_thing thing_uncached
             quick_save = JSON.stringify game._get_quicksave_data()
@@ -227,9 +227,9 @@ describe "Alea Random", ->
 
 
 describe "Things", ->
-    describe "Base", ->
+    describe "Base Thing", ->
         it "will wipe a property that is set to the same as a default", ->
-            class Humanoid extends engine.things.Base
+            class Humanoid extends engine.things.Thing
                 engine.things.define_defaults.call @,
                     maxhp : 0
 
@@ -240,30 +240,30 @@ describe "Things", ->
             humanoid.maxhp = default_value
             assert.ok !humanoid.hasOwnProperty "_maxhp"
         it "can create from serial data", ->
-            humanoid = new engine.things.Base()
+            humanoid = new engine.things.Thing()
             humanoid.size = "large"
             data = humanoid.get_save_data()
-            new_guy = new engine.things.Base data
+            new_guy = new engine.things.Thing data
             assert.ok JSON.stringify(humanoid.get_save_data()) == JSON.stringify(new_guy.get_save_data())
 
         describe "Events", ->
             it "can listen for for an event trigger with arguments", (done) ->
-                thing = new engine.things.Base()
+                thing = new engine.things.Thing()
                 _data = {id:Math.random()}
                 thing.on "event_name", (event) ->
                     assert.ok event.id == _data.id
                     done()
-                thing.trigger new engine.events.Base "event_name", _data
+                thing.trigger new engine.events.Event "event_name", _data
             it "can turn off all event listeners for event", ->
-                thing = new engine.things.Base()
+                thing = new engine.things.Thing()
                 thing.on "event_name", ->
                     throw new Error "We got the event"
                 thing.on "event_name", ->
                     throw new Error "We got this one too"
                 thing.off "event_name"
-                thing.trigger new engine.events.Base "event_name"
+                thing.trigger new engine.events.Event "event_name"
             it "can remove only a single listener", (done) ->
-                thing = new engine.things.Base()
+                thing = new engine.things.Thing()
                 listener_1 = ->
                     throw new Error "We got event 1"
                 listener_2 = ->
@@ -271,16 +271,16 @@ describe "Things", ->
                 thing.on "event_name", listener_1
                 thing.on "event_name", listener_2
                 thing.off "event_name", listener_1
-                thing.trigger new engine.events.Base "event_name"
+                thing.trigger new engine.events.Event "event_name"
             it "can remove all event listeners", ->
-                thing = new engine.things.Base()
+                thing = new engine.things.Thing()
                 thing.on "event_1", ->
                     throw new Error "Event 1 received"
                 thing.on "event_2", ->
                     throw new Error "Event 2 received"
                 thing.off()
-                thing.trigger new engine.events.Base "event_1"
-                thing.trigger new engine.events.Base "event_2"
+                thing.trigger new engine.events.Event "event_1"
+                thing.trigger new engine.events.Event "event_2"
 
         describe "Polymorph", ->
             it "can turn any non-abstract thing into another", ->
@@ -295,7 +295,7 @@ describe "Things", ->
                 incr = ->
                     done() if count >= 2
                     count += 1
-                class Thing extends engine.things.Base
+                class Thing extends engine.things.Thing
                     init: ->
                         incr()
                 class NewerThing extends Thing
@@ -305,25 +305,28 @@ describe "Things", ->
 
         describe "Property chaining", ->
             it "will trigger property chains of ancestors and self", (done) ->
-                class First extends engine.things.Base
+                class First extends engine.things.Thing
                     @property_chains:
                         foo : ["bar"]
                 class Second extends First
                     @property_chains:
                         baz : ["qux"]
                 thing = new Second()
-                count = 1
+                count = 0
                 incr = ->
+                    count += 1
                     if count >= 2
                         done()
-                    count += 1
+                    return
                 thing.on "property_affected", (event) ->
+                    debugger
                     if event.property in ["bar", "qux"]
                         incr()
+                    return
                 thing.trigger new engine.events.ThingPropertyAffected "foo"
                 thing.trigger new engine.events.ThingPropertyAffected "baz"
             it "will do event chaining first in first out", (done) ->
-                class First extends engine.things.Base
+                class First extends engine.things.Thing
                     @property_chains:
                         foo : ["bar"]
                     init: ->
@@ -344,7 +347,7 @@ describe "Things", ->
                 thing.trigger new engine.events.ThingPropertyAffected "foo"
                 thing.trigger new engine.events.ThingPropertyAffected "baz"
             it "will prevent an infinite loop of property chaining", (done) ->
-                class First extends engine.things.Base
+                class First extends engine.things.Thing
                     @property_chains:
                         foo : ["bar"]
                 class Second extends First
@@ -358,7 +361,7 @@ describe "Things", ->
                     count += 1
                 thing.trigger new engine.events.ThingPropertyAffected "foo"
             it "will do two different events in the proper order", (done) ->
-                class First extends engine.things.Base
+                class First extends engine.things.Thing
                     @property_chains:
                         foo : ["bar"]
                     init: ->
@@ -374,7 +377,7 @@ describe "Things", ->
                             (data.property is "qar" and @count is 7)
                             return done() if @count >= 7
                         @on "custom_event", (event) =>
-                            @trigger new engine.events.Base "another_event", {}, event
+                            @trigger new engine.events.Event "another_event", {}, event
                         @on "another_event", ->
                             @count += 1
                             throw new Error "Incorrect order" unless @count is 4
@@ -387,10 +390,10 @@ describe "Things", ->
                             throw new Error "Incorrect order" unless @count is 3
                 thing = new Second()
                 thing.trigger new engine.events.ThingPropertyAffected "foo"
-                thing.trigger new engine.events.Base "custom_event", {}
+                thing.trigger new engine.events.Event "custom_event", {}
                 thing.trigger new engine.events.ThingPropertyAffected "baz"
             it "will chain through to all affected properties when one is changed", (done) ->
-                class Thing extends engine.things.Base
+                class Thing extends engine.things.Thing
                     @property_chains:
                         foo : ["bar"]
                     init: ->
@@ -407,13 +410,13 @@ describe "Things", ->
 
     describe "Conditions", ->
         it "will only affect something as long as it is active", ->
-            class Creature extends engine.things.Base
+            class Creature extends engine.things.Thing
                 engine.things.define_defaults.call @,
                     dex_mod : 5
 
             class Grapple extends engine.things.Condition
                 engine.things.define_defaults.call @,
-                    length      : Infinity
+                    duration    : Infinity
                 _on: ->
                     @registry.get_thing(@target).dex_mod = 0
                 _off: ->
@@ -432,31 +435,31 @@ describe "Things", ->
             thing.dex_mod.should.equal 5
             thing._get_listeners("tick").length.should.equal 0
         it "can affect target on every tick of that target", ->
-            thing = new engine.things.Base()
+            thing = new engine.things.Thing()
             registry = new engine.things.Registry()
             registry.register_thing thing
             thing.hp = 10
 
             class Burning extends engine.things.Condition
                 engine.things.define_defaults.call @,
-                    length      : 3
+                    duration    : 3
                 _tick: (time) ->
                     @registry.get_thing(@_target).hp -= time * 2
 
             burning = new Burning()
             registry.register_thing burning
             burning.apply thing
-            thing.trigger new engine.events.Base "tick", {time:3}
+            thing.trigger new engine.events.Event "tick", {time:3}
             thing.hp.should.equal 4
         it "can have custom removal handlers", ->
-            target = new engine.things.Base()
+            target = new engine.things.Thing()
             registry = new engine.things.Registry()
             registry.register_thing target
             target.is_unconscious = false
             
             class Sleeping extends engine.things.Condition
                 engine.things.define_defaults.call @,
-                    length              : Infinity
+                    duration            : Infinity
                     canceling_events    : ["damage"]
                 _on: ->
                     @registry.get_thing(@_target).is_unconscious = true
@@ -467,11 +470,11 @@ describe "Things", ->
             registry.register_thing sleeping
             sleeping.apply target
             target.is_unconscious.should.equal true
-            target.trigger new engine.events.Base "damage", {}
+            target.trigger new engine.events.Event "damage", {}
             target.is_unconscious.should.equal false
         it "can survive properly through a save and restore", ->
             game = helpers.create_game()
-            thing = new engine.things.Base()
+            thing = new engine.things.Thing()
             game.registry.register_thing thing
             thing.hp = 10
 
@@ -479,7 +482,7 @@ describe "Things", ->
                 @cname = "engine.things.Burning"
 
                 engine.things.define_defaults.call @,
-                    length      : 6
+                    duration    : 6
 
                 _tick: (time) ->
                     @registry.get_thing(@_target).hp -= time
@@ -487,7 +490,7 @@ describe "Things", ->
             burning = new engine.things.Burning()
             game.registry.register_thing burning
             burning.apply thing
-            thing.trigger new engine.events.Base "tick", {time:3}
+            thing.trigger new engine.events.Event "tick", {time:3}
             thing.hp.should.equal 7
 
             save_data = JSON.stringify game._get_save_data()
@@ -495,19 +498,19 @@ describe "Things", ->
             thing = game.registry.get_thing thing.id
             burning = game.registry.get_thing burning.id
             thing.hp.should.equal 7
-            thing.trigger new engine.events.Base "tick", {time:3}
+            thing.trigger new engine.events.Event "tick", {time:3}
             thing.hp.should.equal 4
-            thing.trigger new engine.events.Base "tick", {time:3}
+            thing.trigger new engine.events.Event "tick", {time:3}
             thing.hp.should.equal 4
             burning.remove()
         it "can use the base things property_accessed event to alter a thing's property", ->
-            class Creature extends engine.things.Base
+            class Creature extends engine.things.Thing
                 engine.things.define_defaults.call @,
                     dex_mod : 6
                     other   : 10
             class Grapple extends engine.things.Condition
                 engine.things.define_defaults.call @,
-                    length  : Infinity
+                    duration    : Infinity
                 property_accessed_handler: (event) ->
                     thing = @registry.get_thing @target
                     thing[event.property_name] = event.value / 2
@@ -533,12 +536,12 @@ describe "Things", ->
             thing._get_listeners("property_accessed").length.should.equal 0
 
         it "will fire a property affected event when we bind a property modifier", (done) ->
-            class Creature extends engine.things.Base
+            class Creature extends engine.things.Thing
                 engine.things.define_defaults.call @,
                     dex_mod : 6
             class Grapple extends engine.things.Condition
                 engine.things.define_defaults.call @,
-                    length  : Infinity
+                    duration    : Infinity
                 property_accessed_handler: (event) ->
                     thing = @registry.get_thing @target
                     thing[event.property_name] = event.value / 2
@@ -581,11 +584,12 @@ describe "Things", ->
             registry.unregister_thing cough
             thing.sound_effects_level.should.equal 0
 
-        it "will immediately fade if they have no duration", ->
+        it "will immediately fade if they are immediate", ->
             class FootStep extends engine.things.Effect
                 engine.things.define_defaults.call @,
-                    level       : 1
-                    type        : "sound"
+                    level           : 1
+                    type            : "sound"
+                    is_immediate    : true
 
             registry = new engine.things.Registry()
             thing = new engine.things.Sprite()
@@ -601,37 +605,37 @@ describe "Things", ->
             runner = null
             attacker = null
             was_hit = false
-            class Runner extends engine.things.Base
+            class Runner extends engine.things.Thing
                 bind_events: ->
                     @on "scared", (event) =>
-                        attacker.trigger new engine.events.Base "offer_aoo", {}, event
-                        @trigger new engine.events.Base "flee", {}, event
+                        attacker.trigger new engine.events.Event "offer_aoo", {}, event
+                        @trigger new engine.events.Event "flee", {}, event
                     @on "hit", ->
                         was_hit = true
                     @on "flee", ->
                         assert.ok was_hit
                         done()
-            class Attacker extends engine.things.Base
+            class Attacker extends engine.things.Thing
                 bind_events: ->
                     @on "offer_aoo", (event) ->
-                        runner.trigger new engine.events.Base "hit", {}, event
+                        runner.trigger new engine.events.Event "hit", {}, event
             runner = new Runner()
             attacker = new Attacker()
-            runner.trigger new engine.events.Base "scared"
+            runner.trigger new engine.events.Event "scared"
 
         it "will allow for a callback to wait for player input for something like an attack of opportunity", (done) ->
             defender = null
             attacker = null
             attacker_2 = null
 
-            class Creature extends engine.things.Base
+            class Creature extends engine.things.Thing
                 init: ->
                     @attack_count = 0
 
                 bind_events: ->
                     @on "provoke_aoo", (event, callback) =>
                         setTimeout(->
-                            event.subject.trigger new engine.events.Base "attack", {subject:event.subject}, event
+                            event.subject.trigger new engine.events.Event "attack", {subject:event.subject}, event
                             callback()
                         , 10) # Arbitrary wait to simulate wait for player input
                         return false
@@ -639,10 +643,10 @@ describe "Things", ->
                         if @ is event.subject
                             @attack_count += 1
                     @on "run_away", (event) =>
-                        provoke_event = new engine.events.Base "provoke_aoo", {subject:@}, event
+                        provoke_event = new engine.events.Event "provoke_aoo", {subject:@}, event
                         attacker.trigger provoke_event, =>
                             attacker_2.trigger provoke_event, =>
-                                @trigger new engine.events.Base "ran_away", {}, event
+                                @trigger new engine.events.Event "ran_away", {}, event
                     @on "ran_away", (event) =>
                         @attack_count.should.equal 2
                         done()
@@ -651,10 +655,10 @@ describe "Things", ->
             attacker = new Creature()
             attacker_2 = new Creature()
 
-            defender = defender.trigger new engine.events.Base "run_away"
+            defender = defender.trigger new engine.events.Event "run_away"
 
         it "will halt triggering of an event if a handler returns true", ->
-            class Creature extends engine.things.Base
+            class Creature extends engine.things.Thing
                 init: ->
                     @hp = 10
                 bind_events: ->
@@ -666,7 +670,7 @@ describe "Things", ->
                     @on "damage", (event) =>
                         return true if event.type is "electric"
 
-            electric_damage = new engine.events.Base "damage", {damage:5, type:"electric"}
+            electric_damage = new engine.events.Event "damage", {damage:5, type:"electric"}
             creature_1 = new ElectricProof()
             creature_2 = new Creature()
             creature_1.trigger electric_damage
@@ -675,7 +679,7 @@ describe "Things", ->
             creature_2.hp.should.equal 5
 
         it "will halt triggering of an event if a callback returns true", (done) ->
-            class Creature extends engine.things.Base
+            class Creature extends engine.things.Thing
                 init: ->
                     @hp = 10
                 bind_events: ->
@@ -694,7 +698,7 @@ describe "Things", ->
                         , 10) # arbitrary delay
                         return false
 
-            electric_damage = new engine.events.Base "damage", {damage:5, type:"electric"}
+            electric_damage = new engine.events.Event "damage", {damage:5, type:"electric"}
             creature_1 = new ElectricProof()
             creature_2 = new Creature()
             creature_1.trigger electric_damage, ->
@@ -703,7 +707,7 @@ describe "Things", ->
                     creature_2.hp.should.equal 5
                     done()
         it "will remove the event if the last handler is removed", ->
-            thing = new engine.things.Base()
+            thing = new engine.things.Thing()
             handler = ->
             thing.on "custom_event", handler
             thing.off "custom_event", handler
@@ -711,20 +715,20 @@ describe "Things", ->
 
     describe "Registry", ->
         it "can store a thing and retrive something", ->
-            thing = new engine.things.Base()
+            thing = new engine.things.Thing()
             registry = new engine.things.Registry()
             registry.register_thing thing
             assert.ok registry.things[0] == thing
             assert.ok thing == registry.get_thing(0)
         it "can cache a thing that is registered", ->
-            thing = new engine.things.Base()
+            thing = new engine.things.Thing()
             cache = new engine.Storage()
             registry = new engine.things.Registry null, cache
             registry.register_thing thing
             registry.cache_thing thing._id
             assert.ok registry.things[0] == null
         it "can uncache something that has been cached", ->
-            thing = new engine.things.Base()
+            thing = new engine.things.Thing()
             cache = new engine.Storage()
             registry = new engine.things.Registry null, cache
             thing.maxhp = 10
@@ -736,7 +740,7 @@ describe "Things", ->
             cache_thing = JSON.stringify registry.get_thing(id).get_save_data()
             assert.ok thing == cache_thing
         it "can create save data and be recovered from it", ->
-            thing = new engine.things.Base()
+            thing = new engine.things.Thing()
             cache = new engine.Storage()
             registry = new engine.things.Registry null, cache
             registry.register_thing thing
@@ -761,7 +765,7 @@ describe "Things", ->
             actor.give_sentience brain
             action_manager = new engine.actions.ActionManager()
             count = 0
-            class TestAction extends engine.actions.Base
+            class TestAction extends engine.actions.Action
                 do: ->
                     count += 1
             action_manager.do_action brain, TestAction
@@ -775,7 +779,7 @@ describe "Things", ->
             registry.register_thing actor
             actor.give_sentience brain
             action_manager = new engine.actions.ActionManager()
-            class TestAction extends engine.actions.Base
+            class TestAction extends engine.actions.Action
                 _get_time_to_complete: ->
                     return 3
             action_manager.do_action brain, TestAction, {}, (time) ->

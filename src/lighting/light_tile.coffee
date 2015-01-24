@@ -1,3 +1,8 @@
+###
+LightTile
+This class is used to store and calculate light levels at a given tile
+in the world.
+###
 class engine.lighting.LightTile
     constructor: ->
         @light_sources = []

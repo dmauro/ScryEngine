@@ -1,9 +1,8 @@
 ###
-The world class is responsible for
-loading and unloading tiles as 
-needed.
+World
+The world is ultimately responsible for generating and storing
+all of the zones and tiles in the world.
 ###
-
 class engine.geography.World
     constructor: (data) ->
         if data

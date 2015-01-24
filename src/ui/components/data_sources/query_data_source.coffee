@@ -1,4 +1,4 @@
-class engine.ui.components.data_sources.QueryDataSource extends engine.ui.components.data_sources.Base
+class engine.ui.components.data_sources.QueryDataSource extends engine.ui.components.data_sources.DataSource
     @::__defineGetter__ "length", ->
         return @_queries.length
 

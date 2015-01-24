@@ -1,4 +1,9 @@
-class engine.ui.components.TileMap extends engine.ui.components.Base
+###
+TileMap
+This component displays the world to the user as a 2D
+collection of tiles.
+###
+class engine.ui.components.TileMap extends engine.ui.components.Component
     styles: ["tile_map"]
 
     @::__defineGetter__ "data_source", ->

@@ -1,10 +1,9 @@
 ###
-The Atlas tracks tiles that have
-been exposed. This is used to help
-show what a Brain class has seen of
-the world.
+Atlas
+Tracks tiles that have been exposed. This is used to help
+show what a Brain class has seen of the world.
 
-Currently unused, may not want historical mapping.
+NOTE: Currently unused, we may not want historical mapping.
 ###
 
 class engine.geography.Atlas

@@ -1,3 +1,8 @@
+###
+EventEmitter
+An event emitter is a class which can dispatch and listen
+for events.
+###
 class engine.events.EventEmitter
     _get_events: ->
         return @_events or @_events = {}

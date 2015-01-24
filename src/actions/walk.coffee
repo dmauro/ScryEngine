@@ -1,3 +1,8 @@
+###
+Walk -> Move
+A simple walking action to handle the common case of
+moving a sprite around the world.
+###
 class engine.actions.Walk extends engine.actions.Move
     _fail_if_movement_is_invalid: (x_diff, y_diff) ->
         # Movement must be to an adjacent location

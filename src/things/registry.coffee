@@ -57,9 +57,9 @@ class engine.things.Registry extends engine.events.EventEmitter
             @_add_thing thing
         thing.registry = @
         thing.activate_method_throughout_chain "registry_available", @
-        @trigger new engine.events.Base "registered_thing", {id:thing.id, thing:thing}
+        @trigger new engine.events.Event "registered_thing", {id:thing.id, thing:thing}
         if thing instanceof engine.things.Brain
-            @trigger new engine.events.Base "registered_brain", {id:thing.id, thing:thing}
+            @trigger new engine.events.Event "registered_brain", {id:thing.id, thing:thing}
         return thing.id
 
     _add_thing: (thing) ->
@@ -73,9 +73,9 @@ class engine.things.Registry extends engine.events.EventEmitter
     unregister_thing: (thing) ->
         # I should get rid of this
         delete @things[thing.id]
-        @trigger new engine.events.Base "unregistered_thing", {id:thing.id, thing:thing}
+        @trigger new engine.events.Event "unregistered_thing", {id:thing.id, thing:thing}
         if thing instanceof engine.things.Brain
-            @trigger new engine.events.Base "unregistered_brain", {id:thing.id, thing:thing}
+            @trigger new engine.events.Event "unregistered_brain", {id:thing.id, thing:thing}
 
     cache_thing: (id) ->
         thing = @things[id]
@@ -83,9 +83,9 @@ class engine.things.Registry extends engine.events.EventEmitter
         thing_serial_data = JSON.stringify @_prepare_thing_for_storing thing
         @cache.set_item "thing_cache_#{thing.id}", thing_serial_data
         @things[thing.id] = null
-        @trigger new engine.events.Base "cached_thing", {id:id, thing:thing}
+        @trigger new engine.events.Event "cached_thing", {id:id, thing:thing}
         if thing instanceof engine.things.Brain
-            @trigger new engine.events.Base "cached_brain", {id:id, thing:thing}
+            @trigger new engine.events.Event "cached_brain", {id:id, thing:thing}
 
     remove_cached_things_from_local_storage: ->
         for id, thing of @things
@@ -98,9 +98,9 @@ class engine.things.Registry extends engine.events.EventEmitter
             thing = @_restore_thing_from_serial_data JSON.parse data
             @cache.remove_item "thing_cache_#{id}"
             @things[id] = thing
-            @trigger new engine.events.Base "uncached_thing", {id:id, thing:thing}
+            @trigger new engine.events.Event "uncached_thing", {id:id, thing:thing}
             if thing instanceof engine.things.Brain
-                @trigger new engine.events.Base "uncached_brain", {id:id, thing:thing}
+                @trigger new engine.events.Event "uncached_brain", {id:id, thing:thing}
         return thing
 
     get_thing: (id) ->

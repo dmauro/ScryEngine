@@ -1,4 +1,8 @@
-class engine.ui.components.Query extends engine.ui.components.Base
+###
+Query
+This component collects input from the user.
+###
+class engine.ui.components.Query extends engine.ui.components.Component
     styles: ["query"]
 
     render: ->

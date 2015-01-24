@@ -1,4 +1,10 @@
-class engine.things.Brain extends engine.things.Base
+###
+Brain
+The brain class can be thought of as a controller for another thing.
+That controller could be a player, AI, or anything that is ultimately
+responsible for making choices about behavior for a thing.
+###
+class engine.things.Brain extends engine.things.Thing
     @cname = "engine.things.Brain"
     
     engine.things.define_defaults.call @,
@@ -11,7 +17,7 @@ class engine.things.Brain extends engine.things.Base
 
     take_turn: (callback) ->
         @do_action (time) =>
-            @trigger new engine.events.Base "tick", {time:time}
+            @trigger new engine.events.Event "tick", {time:time}
             return callback time
 
     do_action: (callback) ->

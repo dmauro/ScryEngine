@@ -1,8 +1,8 @@
 ###
-This class is in charge of managing which
-zones go where and how they connect.
+ZoneManager
+The zone manager is in charge of managing which zones go where and
+how they connect, essentially controlling the greater layout of a world.
 ###
-
 class engine.geography.ZoneManager
     constructor: (data) ->
         if data
@@ -42,7 +42,7 @@ class engine.geography.ZoneManager
 
     get_zone_info_at: (x, y, z) ->
         return {
-            constructor : engine.geography.zones.Base
+            constructor : engine.geography.zones.Zone
             entrances   : [] # An array of ZonePoints
             pathways    : [] # An array of ZonePaths
         }

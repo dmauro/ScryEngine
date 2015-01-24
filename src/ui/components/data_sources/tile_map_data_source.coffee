@@ -1,4 +1,4 @@
-class engine.ui.components.data_sources.TileMapDataSource extends engine.ui.components.data_sources.Base
+class engine.ui.components.data_sources.TileMapDataSource extends engine.ui.components.data_sources.DataSource
     @::__defineGetter__ "center_x", ->
         return Math.floor @x + @host_width/2
 
