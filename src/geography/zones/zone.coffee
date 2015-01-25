@@ -29,7 +29,6 @@ class engine.geography.zones.Zone
         @random = new engine.random.Alea data.random
         @tile_constructor_indices = data.tile_constructor_indices
         @sprite_constructor_indices = new MatrixArray data.sprite_constructor_indices
-        console.log "Sprites after restore #{JSON.stringify @sprite_constructor_indices}"
 
     init: (size, random_seed, entrances, pathways) ->
         @size = size
