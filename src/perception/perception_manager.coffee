@@ -11,9 +11,11 @@ it was making a spot check against.
 ###
 
 class engine.perception.PerceptionManager
-    constructor: ->
+    constructor: (action_manager) ->
         BrainManager = @constructor_for_name "brain_manager"
         @brain_manager = new BrainManager()
+        @brain_manager.brain_added_handler = (brain) =>
+            brain.action_manager = action_manager
 
     constructor_for_name: (name) ->
         switch name

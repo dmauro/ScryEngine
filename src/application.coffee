@@ -28,17 +28,24 @@ class engine.Application
         MenuDataSource = @constructor_for_name "menu_data_source"
         menu = new Menu()
         menu.data_source = new MenuDataSource [
-                text    : "New Game"
+                text                : "New Game"
                 selection_callback  : =>
                     menu.dismiss =>
                         @start_new_game()
             ,
-                text    : "Continue Game"
+                text                : "Continue Game"
                 selection_callback  : =>
                     menu.dismiss =>
                         data = @storage.get_item "quicksave"
                         data = data or @storage.get_item "fullsave"
                         @continue_game data
+            ,
+                text                : "Playback Last Game"
+                selection_callback  : =>
+                    menu.dismiss =>
+                        data = @storage.get_item "quicksave"
+                        data = data or @storage.get_item "fullsave"
+                        @playback_game data
         ]
         menu.show()
 
@@ -80,4 +87,13 @@ class engine.Application
 
     continue_game: (game) ->
         @create_game game
+        @game.start()
+
+    playback_game: (game) ->
+        game = JSON.parse game
+        @create_game game.seed
+        cname = game.protagonist_start_info.cname
+        data = game.protagonist_start_info.data
+        creature = engine.utils.create_from_constructor_string cname, data
+        @game.playback creature, game.game_history
         @game.start()

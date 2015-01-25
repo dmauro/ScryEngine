@@ -9,6 +9,8 @@ Actions also have the registry and world available to
 them in the do method.
 ###
 class engine.actions.Action
+    @cname = "engine.actions.Action"
+
     constructor: (@actor, @data, @world, @success_callback, @failure_callback) ->
         @registry = @actor.registry
         @time = 0;

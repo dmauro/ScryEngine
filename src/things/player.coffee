@@ -1,3 +1,9 @@
+###
+Player
+The player class encapsulates input from a player by
+providing a brain for the player host that queries the
+user for input each time it has an action available to it.
+###
 class engine.things.Player extends engine.things.Brain
     @cname = "engine.things.Player"
 

@@ -4,6 +4,8 @@ A simple walking action to handle the common case of
 moving a sprite around the world.
 ###
 class engine.actions.Walk extends engine.actions.Move
+    @cname = "engine.actions.Walk"
+
     _fail_if_movement_is_invalid: (x_diff, y_diff) ->
         # Movement must be to an adjacent location
         if x_diff is 0 and y_diff is 0

@@ -19,9 +19,11 @@ class engine.BrainManager
 
         for own id, thing of registry.things
             if thing instanceof engine.things.Brain
+                @brain_added_handler? thing
                 @brains.push thing
 
     _add_brain_from_registry_event: (event) ->
+        @brain_added_handler? event.thing
         @brains.push event.thing
 
     _remove_brain_from_registry_event: (event) ->

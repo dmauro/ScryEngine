@@ -5,6 +5,8 @@ a sprite from one tile to another while checking that
 the actor is able to do so.
 ###
 class engine.actions.Move extends engine.actions.Action
+    @cname = "engine.actions.Move"
+
     _tile_is_impassable: ->
         unless @actor.incorporeal
             @failure_callback "You cannot enter that tile"

@@ -1,3 +1,9 @@
+###
+TimeKeeper
+This class is in charge of making sure all things in the
+world are offered turns according to how long they spent
+doing their last action.
+###
 class engine.TimeKeeper
     constructor: (data) ->
         if data?

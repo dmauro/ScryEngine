@@ -23,6 +23,7 @@ paste -s -d '\n' \
     src/user.coffee \
     src/character_generator.coffee \
     src/game.coffee \
+    src/game_history.coffee \
     src/message_console.coffee \
     src/constructor_manager.coffee \
     src/registry_subcategory.coffee \
@@ -58,6 +59,7 @@ paste -s -d '\n' \
     src/things/sentient.coffee \
     src/things/brain.coffee \
     src/things/player.coffee \
+    src/things/player_playback.coffee \
     src/things/non_player.coffee \
     src/amd.coffee \
     > bin/engine.coffee

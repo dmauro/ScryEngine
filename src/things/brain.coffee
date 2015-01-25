@@ -3,6 +3,8 @@ Brain
 The brain class can be thought of as a controller for another thing.
 That controller could be a player, AI, or anything that is ultimately
 responsible for making choices about behavior for a thing.
+
+All brains have access to the game's ActionManager via the PerceptionManager.
 ###
 class engine.things.Brain extends engine.things.Thing
     @cname = "engine.things.Brain"
@@ -16,12 +18,21 @@ class engine.things.Brain extends engine.things.Thing
             touch   : 1
 
     take_turn: (callback) ->
+        ###
+        This method is called by the timekeeper. This method
+        must call the callback with a time that we spent doing
+        our action.
+        ###
         @do_action (time) =>
             @trigger new engine.events.Event "tick", {time:time}
             return callback time
 
     do_action: (callback) ->
-        # Do any action and report back how long it takes to do
+        ###
+        Do any action and report back how long it takes to do it.
+        We'll call this from take_turn() only. Use the action_manager
+        property to do the action.
+        ###
         return callback 0
 
     set_host: (thing_id) ->
