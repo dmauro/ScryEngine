@@ -24,15 +24,23 @@ class engine.geography.zones.Zone
             @_restore data
 
     _restore: (data) ->
+        MatrixArray = @constructor_for_name "matrix_array"
         @size = data.size
         @random = new engine.random.Alea data.random
         @tile_constructor_indices = data.tile_constructor_indices
+        @sprite_constructor_indices = new MatrixArray data.sprite_constructor_indices
+        console.log "Sprites after restore #{JSON.stringify @sprite_constructor_indices}"
 
     init: (size, random_seed, entrances, pathways) ->
         @size = size
         @random = new engine.random.Alea null, [random_seed]
         @tile_constructor_indices = @_init_tiles entrances, pathways
         @sprite_constructor_indices = @_init_sprites()
+
+    constructor_for_name: (name) ->
+        switch name
+            when "matrix_array"
+                return engine.utils.MatrixArray
 
     get_tile_constructor_at: (local_x, local_y) ->
         tile_index = local_x + local_y * @size
@@ -57,9 +65,10 @@ class engine.geography.zones.Zone
 
     get_save_data: ->
         save_data =
-            size                : @size
-            random              : @random.get_save_data()
-            tile_constructor_indices : @tile_constructor_indices
+            size                        : @size
+            random                      : @random.get_save_data()
+            tile_constructor_indices    : @tile_constructor_indices
+            sprite_constructor_indices  : @sprite_constructor_indices.get_save_data()
         return save_data
 
     #Tile Generation
@@ -77,4 +86,5 @@ class engine.geography.zones.Zone
 
     _init_sprites: ->
         # Returns a Matrix array of arrays of tile constructor indices
-        return new engine.utils.MatrixArray()
+        MatrixArray = @constructor_for_name "matrix_array"
+        return new MatrixArray()

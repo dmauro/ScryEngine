@@ -75,7 +75,6 @@ class engine.lighting.LightingManager extends engine.RegistrySubcategory
         
         @_new_light_added light_source
 
-
     subcategory_thing_removed: (light_source) ->
         light_source
         .off("light_intensity_updated", @_light_intensity_updated)
@@ -105,7 +104,7 @@ class engine.lighting.LightingManager extends engine.RegistrySubcategory
                 light_tile = new LightTile()
                 @light_map.set_value_at x, y, light_tile
             light_tile = light_tile or new LightTile()
-            light_tile.light_sources.push light_source
+            light_tile.add_light_source light_source
             light_tile.needs_update = true
 
     _light_removed: (light_source) ->

@@ -224,9 +224,8 @@ class engine.geography.World
 
     _create_stratum: (data) ->
         Stratum = @constructor_for_name "stratum"
-        stratum = new Stratum data
+        stratum = new Stratum data, @constructor_manager
         stratum.zone_size = @zone_size
-        stratum.constructor_manager = @constructor_manager
         stratum.get_seed_for_coordinate_handler = (zone_x, zone_y) =>
             z_level = @_get_level_of_stratum stratum
             return @get_seed_for_coordinate zone_x, zone_y, z_level
@@ -238,7 +237,7 @@ class engine.geography.World
 
     _get_level_of_stratum: (stratum) ->
         for z, strat of @strata
-            return z if strat is stratum
+            return parseInt(z, 10) if strat is stratum
 
     _get_stratum_at_level: (level) ->
         stratum = @strata[level]

@@ -27,7 +27,7 @@ These will be labeled as local_x and local_y.
 ###
 
 class engine.geography.Stratum
-    constructor: (data) ->
+    constructor: (data, @constructor_manager) ->
         if data
             @_restore data
         else
@@ -43,8 +43,9 @@ class engine.geography.Stratum
 
     get_save_data: ->
         save_data = {}
-        save_data.zones = @zones.get_save_data (value) =>
+        save_data["zones"] = @zones.get_save_data (value) =>
             return @constructor_manager.get_save_data_from_object value
+        return save_data
 
     ##########
     # Public #
