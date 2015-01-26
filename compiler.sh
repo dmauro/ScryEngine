@@ -53,7 +53,6 @@ paste -s -d '\n' \
     src/things/non_abstract.coffee \
     src/things/registry.coffee \
     src/things/effect.coffee \
-    src/things/effect.coffee \
     src/things/condition.coffee \
     src/things/sprite.coffee \
     src/things/sentient.coffee \

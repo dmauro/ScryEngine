@@ -85,6 +85,18 @@ class engine.things.Thing extends engine.events.EventEmitter
         return false if @_id?
         @_id = id
 
+    constructor_for_string: (name) ->
+        switch name
+            when "Event"
+                return engine.events.Event
+            when "ThingPropertyChange"
+                return engine.events.ThingPropertyChange
+            when "ThingPropertyAffected"
+                return engine.events.ThingPropertyAffected
+            when "ThingSpecificPropertyAffected"
+                return engine.events.ThingSpecificPropertyAffected
+        return super? arguments...
+
     activate_method_throughout_chain: (name, args...) ->
         ###
         This will allow us to call a method at every level

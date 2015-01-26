@@ -28,6 +28,12 @@ class engine.things.Sprite extends engine.things.NonAbstract
                 return level
         )(effect_type)
 
+    constructor_for_string: (name) ->
+        switch name
+            when "effect_applied"
+                return engine.events.EffectApplied
+        return super? arguments...
+
     move_to: (x, y, z) ->
         prev_x = @x
         prev_y = @y
@@ -43,8 +49,16 @@ class engine.things.Sprite extends engine.things.NonAbstract
         return unless stack
         stack.push effect.id
         @["#{effect.type}_effects"] = stack
-        # TODO: Have everyone notice this effect
-        # how are we gonna do that?
+
+        ###
+        Here we trigger an EffectApplied event
+        so that everyone can notice that this has
+        happened in case their turn doesn't come
+        around before the effect has been removed.
+        ###
+        EffectApplied = @constructor_for_string "effect_applied"
+        event = new EffectApplied effect
+        @trigger event
 
     remove_effect: (effect) ->
         stack = @["#{effect.type}_effects"]
