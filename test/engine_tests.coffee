@@ -246,42 +246,6 @@ describe "Things", ->
             new_guy = new engine.things.Thing data
             assert.ok JSON.stringify(humanoid.get_save_data()) == JSON.stringify(new_guy.get_save_data())
 
-        describe "Events", ->
-            it "can listen for for an event trigger with arguments", (done) ->
-                thing = new engine.things.Thing()
-                _data = {id:Math.random()}
-                thing.on "event_name", (event) ->
-                    assert.ok event.id == _data.id
-                    done()
-                thing.trigger new engine.events.Event "event_name", _data
-            it "can turn off all event listeners for event", ->
-                thing = new engine.things.Thing()
-                thing.on "event_name", ->
-                    throw new Error "We got the event"
-                thing.on "event_name", ->
-                    throw new Error "We got this one too"
-                thing.off "event_name"
-                thing.trigger new engine.events.Event "event_name"
-            it "can remove only a single listener", (done) ->
-                thing = new engine.things.Thing()
-                listener_1 = ->
-                    throw new Error "We got event 1"
-                listener_2 = ->
-                    done()
-                thing.on "event_name", listener_1
-                thing.on "event_name", listener_2
-                thing.off "event_name", listener_1
-                thing.trigger new engine.events.Event "event_name"
-            it "can remove all event listeners", ->
-                thing = new engine.things.Thing()
-                thing.on "event_1", ->
-                    throw new Error "Event 1 received"
-                thing.on "event_2", ->
-                    throw new Error "Event 2 received"
-                thing.off()
-                thing.trigger new engine.events.Event "event_1"
-                thing.trigger new engine.events.Event "event_2"
-
         describe "Polymorph", ->
             it "can turn any non-abstract thing into another", ->
                 humanoid = new engine.things.NonAbstract()
@@ -319,7 +283,6 @@ describe "Things", ->
                         done()
                     return
                 thing.on "property_affected", (event) ->
-                    debugger
                     if event.property in ["bar", "qux"]
                         incr()
                     return
