@@ -26,7 +26,7 @@ class engine.Storage
         if @use_local_storage
             localStorage.removeItem key
         if @use_memory_storage
-            @data[key] = null
+            delete @data[key]
 
     get_remaining_space = ->
         if @use_local_storage
