@@ -228,7 +228,6 @@ class engine.things.Thing extends engine.events.EventEmitter
             "_events"
             "_property_modifier_handlers"
             "registry"
-            "action_manager"
         ]
         for own property, value of @
             continue if property in to_exclude

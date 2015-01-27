@@ -10,15 +10,15 @@ class engine.Game
         else
             @_init +new Date()
             
+        # TODO: Action manager creation should just get moved to timekeeper
+        # We shouldn't need it here
+        # PerceptionManager will probably get created by timekeeper as well
         ActionManager = @constructor_for_name "action_manager"
         @action_manager = new ActionManager @world
-        PerceptionManager = @constructor_for_name "perception_manager"
-        @perception_manager = new PerceptionManager @action_manager
+        @timekeeper.action_manager = @action_manager
 
         @timekeeper.bind_to_registry @registry
         @world.bind_to_registry @registry
-        #@sprite_distance_manager.bind_to_registry @registry
-        @perception_manager.bind_to_registry @registry
 
         # This will allow things to all display messages via the registry
         @registry.display_message_to_console = =>
@@ -32,8 +32,6 @@ class engine.Game
 
     constructor_for_name: (name) ->
         switch name
-            when "perception_manager"
-                return engine.perception.PerceptionManager
             when "timekeeper"
                 return engine.TimeKeeper
             when "world"
@@ -175,7 +173,6 @@ class engine.Game
             id                      : @id
             seed                    : @seed
             timekeeper              : @timekeeper.get_save_data is_quicksave
-            #sprite_distance_manager : @sprite_distance_manager.get_save_data()
             message_console         : @message_console.get_save_data is_quicksave
             world                   : @world.get_save_data is_quicksave
             # Registry needs to come after world because the world might delete tiles

@@ -39,6 +39,7 @@ class engine.perception.Perceived
         sprite = @get_sprite()
         EffectApplied = @constructor_for_name "effect_applied"
         sprite.on EffectApplied::event_name, (event) ->
+            sprite = event.target
             # TODO: Check if this spikes the presence levels
 
     get_save_data: ->

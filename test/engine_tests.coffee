@@ -104,7 +104,7 @@ describe "Game", ->
                 game.timekeeper.time.should.equal 6
                 done()
             class Brain extends engine.things.Brain
-                take_turn: (callback) ->
+                take_turn: (action_manager, callback) ->
                     if turn_count >= 5
                         finish()
                     else
@@ -134,7 +134,7 @@ describe "Game", ->
 
         it "in the event of a tie, the thing that went less recently goes first", (done) ->
             class Brain extends engine.things.Brain
-                take_turn: (callback) ->
+                take_turn: (action_manager, callback) ->
                     setTimeout(=>
                         host = @registry.get_thing @host
                         host.turns_taken += 1

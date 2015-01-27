@@ -87,7 +87,7 @@ class engine.TimeKeeper
         @things.push value
         index = @things.length - 1
         thing = value.thing
-        thing.take_turn (time) =>
+        thing.take_turn @action_manager, (time) =>
             return if @is_ended?
             @things[index].time += time
             @_offer_next_turn()
