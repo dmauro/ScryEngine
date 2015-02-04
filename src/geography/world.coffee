@@ -28,12 +28,15 @@ class engine.geography.World
                 return engine.geography.Stratum
             when "zone_manager"
                 return engine.geography.ZoneManager
+            when "constructor_manager"
+                return engine.ConstructorManager
 
     _restore: (data) ->
         data = JSON.parse data if typeof data is "string"
         @seed = data.seed
         @protagonist = data.protagonist
-        @constructor_manager = new engine.ConstructorManager data.constructor_manager
+        ConstructorManager = @constructor_for_name "constructor_manager"
+        @constructor_manager = new ConstructorManager data.constructor_manager
         @geography_config = JSON.parse data.geography_config
         @loading_buffer = @geography_config.loading_buffer
         @zone_size = @geography_config.zone_size
@@ -44,7 +47,8 @@ class engine.geography.World
             @strata[level] = @_create_stratum stratum_data
 
     _init: ->
-        @constructor_manager = new engine.ConstructorManager()
+        ConstructorManager = @constructor_for_name "constructor_manager"
+        @constructor_manager = new ConstructorManager()
         @strata = {}
 
     bind_to_registry: (registry) ->
@@ -75,15 +79,16 @@ class engine.geography.World
         host.move_to spawn_pos.x, spawn_pos.y, spawn_pos.z
 
     get_save_data: ->
+        strata = {}
+        for level, stratum of @strata
+            strata[level] = stratum.get_save_data()
         save_data =
             geography_config    : JSON.stringify @geography_config
             seed                : @seed
             protagonist         : @protagonist
             constructor_manager : @constructor_manager.get_save_data()
             zone_manager        : @zone_manager.get_save_data()
-            strata              : {}
-        for level, stratum of @strata
-            save_data.strata[level] = stratum.get_save_data()
+            strata              : strata
         return save_data
 
     start: ->

@@ -21,6 +21,8 @@ class engine.things.Registry extends engine.events.EventEmitter
         switch name
             when "cache"
                 return engine.Storage
+            when "constructor_manager"
+                return engine.ConstructorManager
 
     _restore_thing_from_serial_data: (data) ->
         return @constructor_manager.restore_object_from_data data
@@ -30,12 +32,14 @@ class engine.things.Registry extends engine.events.EventEmitter
 
     _init: ->
         @id_count = 0
-        @constructor_manager = new engine.ConstructorManager()
+        ConstructorManager = @constructor_for_name "constructor_manager"
+        @constructor_manager = new ConstructorManager()
 
     _restore: (data) ->
         data = JSON.parse data if typeof data is "string"
         @id_count = data.id_count
-        @constructor_manager = new engine.ConstructorManager data.constructor_manager
+        ConstructorManager = @constructor_for_name "constructor_manager"
+        @constructor_manager = new ConstructorManager data.constructor_manager
         for own id, thing_data of data.things
             if thing_data is null
                 @things[id] = null
@@ -116,33 +120,34 @@ class engine.things.Registry extends engine.events.EventEmitter
                 things.push thing
         return thing
 
-    _get_save_data: ->
+    _get_save_data: (things, cached_things) ->
         save_data =
-            things              : {}
-            cached_things       : {}
+            things              : things
+            cached_things       : cached_things
             id_count            : @id_count
             constructor_manager : @constructor_manager.get_save_data()
         return save_data
 
     _get_quicksave_data: ->
         # Leave cached stuff alone
-        save_data = @_get_save_data()
+        things = {}
         for own id, thing of @things
             if thing is null
-                save_data.things[id] = null
+                things[id] = null
             else
-                save_data.things[id] = @_prepare_thing_for_storing thing
-        return save_data
+                things[id] = @_prepare_thing_for_storing thing
+        return @_get_save_data things, {}
 
     _get_fullsave_data: ->
         # Return the save data
-        save_data = @_get_save_data()
+        things = {}
+        cached_things = {}
         for own id, thing of @things
             if thing is null
-                save_data.cached_things[id] = @cache.get_item "thing_cache_#{id}"
+                cached_things[id] = @cache.get_item "thing_cache_#{id}"
             else
-                save_data.things[id] = @_prepare_thing_for_storing thing
-        return save_data
+                things[id] = @_prepare_thing_for_storing thing
+        return @_get_save_data things, cached_things
 
     get_save_data: (is_quicksave) ->
         if is_quicksave is true
