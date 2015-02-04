@@ -13,5 +13,5 @@ class engine.things.Player extends engine.things.Brain
         @listen_for_actions_handler callback, (error_message) =>
             # In case of failure, give the player back control
             console.log "Error completing action:", error_message
-            @do_action callback
+            @do_action action_manager, callback
 

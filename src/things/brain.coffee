@@ -4,8 +4,6 @@ The brain class can be thought of as a controller for another thing.
 That controller could be a player, AI, or anything that is ultimately
 responsible for making choices about behavior for a thing. The host of
 a brain should be a Sentient or Sentient subclass.
-
-All brains have access to the game's ActionManager via the PerceptionManager.
 ###
 class engine.things.Brain extends engine.things.Thing
     @cname = "engine.things.Brain"
@@ -26,10 +24,12 @@ class engine.things.Brain extends engine.things.Thing
         ###
 
         # TODO perception handler
+        # This would be a handler set by the perception manager
+        # so that we'd do the active perception for this brain
         if typeof @perception_handler is "function"
             @perception_handler()
             
-        @do_action action_manager (time) =>
+        @do_action action_manager, (time) =>
             @trigger new engine.events.Event "tick", {time:time}
             return callback time
 
