@@ -1,15 +1,21 @@
 ###
-Perceived
+SpritePerceptionLayer
 This is a layer between a brain and a sprite that it is
 perceiving. This layer ensures the brain doesn't know
-more than it should about the perceived sprite.
+more than it should about the perceived sprite. This is
+a very stateful object that is a brain's "perception history"
+for any given sprite.
 
 This object will also listen for effects for us to
-catch spikes in the sensory levels while the brain
-wasn't specifically watching.
+catch spikes in the sensory levels that might have
+started and ended before we got a chance to check.
 ###
 
-class engine.perception.Perceived
+class engine.perception.SpritePerceptionLayer
+    @cname = "engine.perception.SpritePerceptionLayer"
+
+    presence_types = ["visual", "sound", "smell", "touch"]
+
     constructor: (data) ->
         if data?
             @_restore data
@@ -17,16 +23,15 @@ class engine.perception.Perceived
             @_init()
 
     _restore: (data) ->
+        data = JSON.parse data if typeof data is "string"
         @_thing_id = data._thing_id
         @presence_levels = data.presence_levels
 
     _init: ->
         @_sprite_id = null
-        @presence_levels =
-            sight       : 0
-            hearing     : 0
-            smelling    : 0
-            touch       : 0
+        @presence_levels = {}
+        for type in presence_types
+            @presence_levels[type] = 0
 
     constructor_for_name: (name) ->
         switch name
@@ -49,6 +54,11 @@ class engine.perception.Perceived
 
     set_sprite: (sprite) ->
         @_sprite_id = sprite.id
+        for type in presence_types
+            @presence_levels[type] = sprite["#{type}_effects_level"]
+
+    get_sprite_id: ->
+        return @_sprite_id
 
     get_sprite: ->
         return @registry.get_thing @_sprite_id

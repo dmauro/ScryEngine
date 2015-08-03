@@ -3,6 +3,9 @@ TimeKeeper
 This class is in charge of making sure all things in the
 world are offered turns according to how long they spent
 doing their last action.
+
+Note: This should share a brain manager with the perception
+manager instead of duplicating that work.
 ###
 class engine.TimeKeeper
     constructor: (data) ->

@@ -1,11 +1,14 @@
 ###
+SpriteManager
 This tracks the distances between sprites
 to aid in perception because we want to
 use pathfinding distances for hearing and
 smelling, rather than LOS distances.
+
+This should be owned by the perception manager.
 ###
 
-class engine.SpriteDistanceManager
+class engine.perception.SpriteManager
     constructor: (data) ->
         if data
             @_restore data
@@ -13,8 +16,8 @@ class engine.SpriteDistanceManager
             @_init()
 
     _restore: (data) ->
-        # We can actually store the things in here rather than their
-        # IDs because we can be sure that they are not cached away.
+        # Sprites don't get restored from ID until the registry is binded
+        # but this array normally holds references to the sprites themselves.
         @sprites = data.sprites
         @positions = data.positions
         @distances = new engine.utils.RelationshipDictionary data.distances
@@ -42,11 +45,15 @@ class engine.SpriteDistanceManager
             @sprites.push event.thing
             @_sprite_moved event.thing, event.thing.x, event.thing.y
             @_bind_movement_for_sprite event.thing
+            if typeof @sprite_added_handler is "function"
+                @sprite_added_handler(event.thing)
 
     _remove_thing_from_registry_event: (event) ->
         if event.thing instanceof engine.things.Sprite
             @_unbind_movement_for_sprite event.thing
             engine.utils.remove_val_from_array @sprites, event.thing
+            if typeof @sprite_removed_handler is "function"
+                @sprite_removed_handler(event.thing)
 
     _bind_movement_for_sprite: (sprite) ->
         sprite.on "sprite_moved", @_sprite_movement_handler, @

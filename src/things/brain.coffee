@@ -23,9 +23,6 @@ class engine.things.Brain extends engine.things.Thing
         our action.
         ###
 
-        # TODO perception handler
-        # This would be a handler set by the perception manager
-        # so that we'd do the active perception for this brain
         if typeof @perception_handler is "function"
             @perception_handler()
             

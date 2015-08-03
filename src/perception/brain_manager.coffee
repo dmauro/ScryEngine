@@ -5,7 +5,7 @@ get saved as it will just recreate the
 list from the registry.
 ###
 
-class engine.BrainManager
+class engine.perception.BrainManager
     constructor: ->
         @brains = []
 
