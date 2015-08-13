@@ -27,9 +27,7 @@ paste -s -d '\n' \
     src/message_console.coffee \
     src/constructor_manager.coffee \
     src/registry_subcategory.coffee \
-    src/brain_manager.coffee \
     src/timekeeper.coffee \
-    src/sprite_distance_manager.coffee \
     src/lighting/lighting_manager.coffee \
     src/lighting/light_tile.coffee \
     src/geography/world.coffee \
@@ -39,6 +37,9 @@ paste -s -d '\n' \
     src/geography/tiles/tile.coffee \
     src/geography/tiles/basic_tiles.coffee \
     src/perception/perception_manager.coffee \
+    src/perception/perception_filter.coffee \
+    src/perception/sprite_manager.coffee \
+    src/perception/sprite_perception_layer.coffee \
     src/ui/components/component.coffee \
     src/ui/components/menu.coffee \
     src/ui/components/query.coffee \

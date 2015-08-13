@@ -22,7 +22,6 @@ describe "EventEmitter", ->
         assert.equal emitter._events["__all_events"][0]["listener"], event_handler, "Handler did not match."
 
     it "will trigger a listener for an event", ->
-        debugger
         did_trigger = false
         emitter.on event_name, ->
             did_trigger = true

@@ -26,6 +26,7 @@ class engine.perception.PerceptionFilter
     _init: ->
 
     get_save_data: ->
+        return {}
 
     filter: (viewer, thing, property, los_distance, path_distance, sense_levels) ->
         can_perceive_property = false

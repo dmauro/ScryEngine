@@ -48,9 +48,10 @@ class engine.perception.SpritePerceptionLayer
             # TODO: Check if this spikes the presence levels
 
     get_save_data: ->
-        save_data =
+        return {
             _sprite_id      : @_sprite_id
             presence_levels : @presence_levels
+        }
 
     set_sprite: (sprite) ->
         @_sprite_id = sprite.id

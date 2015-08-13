@@ -50,6 +50,7 @@ describe "Utils", ->
 describe "Game", ->
     describe "Savestates", ->
         it "should be able to save and restore a game", ->
+            debugger
             game = helpers.create_game()
             thing = new engine.things.Thing()
             brain = new engine.things.Brain()

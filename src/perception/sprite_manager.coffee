@@ -30,30 +30,28 @@ class engine.perception.SpriteManager
     bind_to_registry: (registry) ->
         @registry = registry
         registry
-        .on("registered_thing", @_add_thing_from_registry_event, @)
-        .on("unregistered_thing", @_remove_thing_from_registry_event, @)
-        .on("cached_thing", @_remove_thing_from_registry_event, @)
-        .on("uncached_thing", @_add_thing_from_registry_event, @)
+        .on("registered_sprite", @_add_sprite_from_registry_event, @)
+        .on("unregistered_sprite", @_remove_sprite_from_registry_event, @)
+        .on("cached_sprite", @_remove_sprite_from_registry_event, @)
+        .on("uncached_sprite", @_add_sprite_from_registry_event, @)
 
         for id in @sprites
             thing = @registry.get_thing id
             @_bind_movement_for_sprite thing
             @sprites.push thing
 
-    _add_thing_from_registry_event: (event) ->
-        if event.thing instanceof engine.things.Sprite
-            @sprites.push event.thing
-            @_sprite_moved event.thing, event.thing.x, event.thing.y
-            @_bind_movement_for_sprite event.thing
-            if typeof @sprite_added_handler is "function"
-                @sprite_added_handler(event.thing)
+    _add_sprite_from_registry_event: (event) ->
+        @sprites.push event.thing
+        @_sprite_moved event.thing, event.thing.x, event.thing.y
+        @_bind_movement_for_sprite event.thing
+        if typeof @sprite_added_handler is "function"
+            @sprite_added_handler(event.thing)
 
-    _remove_thing_from_registry_event: (event) ->
-        if event.thing instanceof engine.things.Sprite
-            @_unbind_movement_for_sprite event.thing
-            engine.utils.remove_val_from_array @sprites, event.thing
-            if typeof @sprite_removed_handler is "function"
-                @sprite_removed_handler(event.thing)
+    _remove_sprite_from_registry_event: (event) ->
+        @_unbind_movement_for_sprite event.thing
+        engine.utils.remove_val_from_array @sprites, event.thing
+        if typeof @sprite_removed_handler is "function"
+            @sprite_removed_handler(event.thing)
 
     _bind_movement_for_sprite: (sprite) ->
         sprite.on "sprite_moved", @_sprite_movement_handler, @

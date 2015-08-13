@@ -64,6 +64,8 @@ class engine.things.Registry extends engine.events.EventEmitter
         @trigger new engine.events.Event "registered_thing", {id:thing.id, thing:thing}
         if thing instanceof engine.things.Brain
             @trigger new engine.events.Event "registered_brain", {id:thing.id, thing:thing}
+        if thing instanceof engine.things.Sprite
+            @trigger new engine.events.Event "registered_sprite", {id:thing.id, thing:thing}
         return thing.id
 
     _add_thing: (thing) ->
@@ -80,6 +82,8 @@ class engine.things.Registry extends engine.events.EventEmitter
         @trigger new engine.events.Event "unregistered_thing", {id:thing.id, thing:thing}
         if thing instanceof engine.things.Brain
             @trigger new engine.events.Event "unregistered_brain", {id:thing.id, thing:thing}
+        if thing instanceof engine.things.Sprite
+            @trigger new engine.events.Event "unregistered_sprite", {id:thing.id, thing:thing}
 
     cache_thing: (id) ->
         thing = @things[id]
@@ -90,6 +94,8 @@ class engine.things.Registry extends engine.events.EventEmitter
         @trigger new engine.events.Event "cached_thing", {id:id, thing:thing}
         if thing instanceof engine.things.Brain
             @trigger new engine.events.Event "cached_brain", {id:id, thing:thing}
+        if thing instanceof engine.things.Sprite
+            @trigger new engine.events.Event "cached_sprite", {id:id, thing:thing}
 
     remove_cached_things_from_local_storage: ->
         for id, thing of @things
@@ -105,6 +111,8 @@ class engine.things.Registry extends engine.events.EventEmitter
             @trigger new engine.events.Event "uncached_thing", {id:id, thing:thing}
             if thing instanceof engine.things.Brain
                 @trigger new engine.events.Event "uncached_brain", {id:id, thing:thing}
+            if thing instanceof engine.things.Sprite
+                @trigger new engine.events.Event "uncached_sprite", {id:id, thing:thing}
         return thing
 
     get_thing: (id) ->

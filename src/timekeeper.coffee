@@ -3,9 +3,6 @@ TimeKeeper
 This class is in charge of making sure all things in the
 world are offered turns according to how long they spent
 doing their last action.
-
-Note: This should share a brain manager with the perception
-manager instead of duplicating that work.
 ###
 class engine.TimeKeeper
     constructor: (data) ->
@@ -17,6 +14,8 @@ class engine.TimeKeeper
     _init: ->
         @things = []
         @time = 0
+        PerceptionManager = @constructor_for_name "perception_manager"
+        @perception_manager = new PerceptionManager()
 
     _restore: (data) ->
         data = JSON.parse data if typeof data is "string"
@@ -24,9 +23,31 @@ class engine.TimeKeeper
         for value in data.things
             @things.push value
         @time = data.time
+        PerceptionManager = @constructor_for_name "perception_manager"
+        @perception_manager = new PerceptionManager(data.perception_manager)
+        
+    get_save_data: ->
+        save_data =
+            things              : []
+            time                : @time
+            perception_manager  : @perception_manager.get_save_data()
+        for value in @things
+            # Just save the id of the things
+            save_data.things.push(
+                thing   : value.thing.id
+                time    : value.time
+            )
+        return save_data
+
+    constructor_for_name: (name) ->
+        switch name
+            when "perception_manager"
+                return engine.perception.PerceptionManager
 
     bind_to_registry: (registry) ->
         @registry = registry
+        @perception_manager.bind_to_registry registry
+        
         registry.on("registered_brain", (event) =>
             @_add_thing event.id, event.thing
         ).on("unregistered_brain", (event) =>
@@ -55,18 +76,6 @@ class engine.TimeKeeper
             if @things[i].thing.id is id
                 @things.splice i, 1
                 return
-        
-    get_save_data: ->
-        save_data =
-            things  : []
-            time    : @time
-        for value in @things
-            # Just save the id of the things
-            save_data.things.push(
-                thing   : value.thing.id
-                time    : value.time
-            )
-        return save_data
 
     _offer_next_turn: ->
         next = @_get_index_of_thing_with_least_time()
