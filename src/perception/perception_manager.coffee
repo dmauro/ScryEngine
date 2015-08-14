@@ -38,7 +38,6 @@ class engine.perception.PerceptionManager
         @brain_ids = []
 
     get_save_data: ->
-        debugger
         filters = {}
         perception_layer_arrays = {}
         for id, filter of @filters
@@ -85,6 +84,10 @@ class engine.perception.PerceptionManager
         .on("cached_sprite", @_sprite_removed, @)
         .on("uncached_sprite", @_sprite_added, @)
 
+        for layer_array in @perception_layer_arrays
+            for layer in layer_array
+                layer.bind_to_registry registry
+
     _brain_added: (event) ->
         brain = event.thing
         brain_id = event.id
@@ -110,8 +113,11 @@ class engine.perception.PerceptionManager
         brain.perception_handler = () =>
             # TODO: perception for this brain
 
+        @brain_ids.push brain_id
+
     _brain_removed: (event) ->
         brain_id = event.id
+        engine.utils.remove_val_from_array @brain_ids, brain_id
         delete @filters[brain_id]
         delete @perception_layer_arrays[brain_id]
 
@@ -136,7 +142,7 @@ class engine.perception.PerceptionManager
         for brain_id in @brain_ids
             layer_array = @perception_layer_arrays[brain_id] ? []
             for layer in layer_array
-                if layer.get_sprite_id is sprite.id
+                if layer.get_sprite_id() is sprite.id
                     engine.utils.remove_val_from_array layer_array, layer
                     continue
             @perception_layer_arrays[brain_id] = layer_array

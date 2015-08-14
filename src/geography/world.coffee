@@ -172,11 +172,11 @@ class engine.geography.World
     _track_protagonist: ->
         protagonist = @get_protagonist()
         @_tracked_host = protagonist.get_host()
-        protagonist.on "host_affected", @_host_changed_handler, @
+        protagonist.on "host_property_affected", @_host_changed_handler, @
         @_tracked_host.on "sprite_moved", @_sprite_moved_handler, @
 
     _stop_tracking_protagonist: ->
-        @get_protagonist().off "host_affected", @_host_changed_handler
+        @get_protagonist().off "host_property_affected", @_host_changed_handler
         @_tracked_host.off "sprite_moved", @_sprite_moved_handler
 
     _host_changed_handler: (event) ->

@@ -103,17 +103,24 @@ class engine.events.EventEmitter
         listeners = @_get_listeners event.name
         if event.name?
             listeners.concat @_get_listeners @_all_events_name
+
+        # Prevent callback multi-calling
+        finish = ->
+            completion_callback = callback
+            callback = ->
+            completion_callback()
+
         call_loop = (index) =>
-            return callback() unless listeners[index]?
+            return finish() unless listeners[index]?
             listener = listeners[index].listener
             scope = listeners[index].scope
             call_result = listener.call scope, event, (should_stop_handling) ->
                 return if call_result is true
                 if should_stop_handling is true
-                    return callback()
+                    return finish()
                 call_loop index + 1
             if call_result is true
-                return callback()
+                return finish()
             unless call_result is false
                 call_loop index + 1
         call_loop 0

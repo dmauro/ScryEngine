@@ -25,7 +25,7 @@ class engine.ui.components.data_sources.TileMapDataSource extends engine.ui.comp
         @tile_height = @config.tile_height
         @protagonist = @world.get_protagonist()
         @host = @protagonist.get_host()
-        @protagonist.on "host_affected", @_host_changed_handler, @
+        @protagonist.on "host_property_affected", @_host_changed_handler, @
         @host.on "sprite_moved", @_update_protagonist_location, @
         @_update_protagonist_location()
 

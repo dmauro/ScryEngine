@@ -12,7 +12,7 @@ class engine.events.ThingPropertyAffected extends engine.events.Event
 
 class engine.events.ThingSpecificPropertyAffected extends engine.events.Event
     constructor: (property, args...) ->
-        super "#{property}_affected", args...
+        super "#{property}_property_affected", args...
 
 class engine.events.SpriteMoved extends engine.events.Event
     constructor: (x, y, z, prev_x, prev_y, prev_z, args...) ->
@@ -20,5 +20,5 @@ class engine.events.SpriteMoved extends engine.events.Event
 
 class engine.events.EffectApplied extends engine.events.Event
     event_name: "effect_applied"
-    construcor: (effect, args...) ->
+    constructor: (effect, args...) ->
         super @event_name, {effect:effect}, args...

@@ -10,6 +10,9 @@ describe "EventEmitter", ->
 
     beforeEach ->
         emitter = new EventEmitter()
+
+    afterEach ->
+        emitter.off()
         
     it "will add a listener with an event name", ->
         event_handler = ->
