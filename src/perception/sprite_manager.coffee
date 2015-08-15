@@ -35,10 +35,12 @@ class engine.perception.SpriteManager
         .on("cached_sprite", @_remove_sprite_from_registry_event, @)
         .on("uncached_sprite", @_add_sprite_from_registry_event, @)
 
+        sprites = []
         for id in @sprites
             thing = @registry.get_thing id
             @_bind_movement_for_sprite thing
-            @sprites.push thing
+            sprites.push thing
+        @sprites = sprites
 
     _add_sprite_from_registry_event: (event) ->
         @sprites.push event.thing
@@ -63,9 +65,7 @@ class engine.perception.SpriteManager
         @_sprite_moved event.target, event.x, event.y
 
     _sprite_moved: (sprite, x, y) ->
-        @positions[sprite.id] =
-            x : x
-            y : y
+        @positions[sprite.id] = [x, y]
         # Calculate distances to other sprites
         id = sprite.id
         for other_sprite in @sprites
