@@ -1,5 +1,5 @@
 assert = require 'assert'
-engine = require '../bin/engine'
+engine = require '../../bin/engine'
 
 describe "EventEmitter", ->
 

@@ -66,4 +66,4 @@ class engine.random.Alea
         return @random() + (@random() * 0x200000 | 0) * 1.1102230246251565e-16 # 2^-53
 
     get_save_data: ->
-        return @
+        return JSON.stringify @

@@ -35,5 +35,5 @@ class engine.MessageConsole
     get_save_data: (is_quicksave=false) ->
         save_data =
             message_history_length  : @message_history_length
-            message                 : @messages
+            messages                : @messages
         return save_data

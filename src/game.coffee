@@ -12,7 +12,6 @@ class engine.Game
             
         # TODO: Action manager creation should just get moved to timekeeper
         # We shouldn't need it here
-        # PerceptionManager will probably get created by timekeeper as well
         ActionManager = @constructor_for_name "action_manager"
         @action_manager = new ActionManager @world
         @timekeeper.action_manager = @action_manager

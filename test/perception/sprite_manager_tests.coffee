@@ -1,6 +1,6 @@
 should = require 'should'
 assert = require 'assert'
-engine = require '../bin/engine'
+engine = require '../../bin/engine'
 
 registry = null
 manager = null
@@ -61,7 +61,6 @@ describe "Sprite Manager", ->
         it "still has the sprite after restore", ->
             sprite = new engine.things.Sprite()
             registry.register_thing sprite
-            debugger
             helpers.restore_manager()
             manager.sprites[0].should.be.equal sprite
 
@@ -70,7 +69,6 @@ describe "Sprite Manager", ->
             sprite.x = 1
             sprite.y = 1
             registry.register_thing sprite
-            debugger
             helpers.restore_manager()
             manager.sprites[0].should.be.equal sprite
 

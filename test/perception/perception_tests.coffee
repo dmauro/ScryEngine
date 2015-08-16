@@ -1,6 +1,6 @@
 should = require 'should'
 assert = require 'assert'
-engine = require '../bin/engine'
+engine = require '../../bin/engine'
 
 registry = null
 manager = null
