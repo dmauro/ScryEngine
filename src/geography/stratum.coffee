@@ -34,6 +34,7 @@ class engine.geography.Stratum
             @_init()
 
     _restore: (data) ->
+        @zone_size = data.zone_size
         @zones = new engine.utils.MatrixArray data.zones
         @zones.for_each (value, x, y) =>
             @zones.set_value_at x, y, @constructor_manager.restore_object_from_data value
@@ -42,7 +43,8 @@ class engine.geography.Stratum
         @zones = new engine.utils.MatrixArray()
 
     get_save_data: ->
-        save_data = {}
+        save_data =
+            zone_size   : @zone_size
         save_data["zones"] = @zones.get_save_data (value) =>
             return @constructor_manager.get_save_data_from_object value
         return save_data
